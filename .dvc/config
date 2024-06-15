@@ -1,4 +1,0 @@
-[core]
-    remote = localstore
-['remote "localstore"']
-    url = /Users/ivangolov/Desktop/MLops/MLops-projectdatastore

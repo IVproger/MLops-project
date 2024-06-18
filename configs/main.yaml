@@ -1,0 +1,6 @@
+data:
+  url: https://drive.google.com/uc?id=1CKXjF6xZEgjYsdwfCMxoHChI7J5WjjdI
+  output: ../datastore/data.csv
+  datastore_path: ../datastore/data.csv
+  sample_path: ../data/samples/sample.csv
+  sample_size: 0.2

@@ -6,7 +6,6 @@ __pycache__/
 datastore
 .DS_Store
 
-
 # C extensions
 *.so
 

@@ -6,3 +6,6 @@ pandas
 numpy
 scikit-learn
 great_expectations
+matplotlib
+seaborn
+pylint

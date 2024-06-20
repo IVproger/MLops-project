@@ -46,6 +46,7 @@ def pull_features(df: DataFrame):
         "ArrDelay",
     ]:
         df[c] = df[c].astype("int64")
+    return df
 
 
 def str2date(df: DataFrame) -> DataFrame:

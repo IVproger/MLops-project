@@ -122,3 +122,36 @@ def hash_tail_number(df: DataFrame) -> DataFrame:
     df["Tail_Number"] = df["Tail_Number"].map(hash_feature)
     return df
 
+
+def sync_times(df: DataFrame) -> DataFrame:
+    """
+    Transform `DepTime` & `AirTime` columns to minutes
+
+    Args:
+        df (DataFrame): Source dataframe
+
+    Returns:
+        Source dataframe with `DepTime` & `AirTime` columns' time transformed to minutes
+    """
+    # Check that the column exists
+    if ["DepTime", "AirTime"] not in df.columns:
+        raise ValueError(
+            "[DepTime, AirTime] columns are expected in the dataframe, but not found"
+        )
+
+    # Check datatype
+    for c in ["DepTime", "AirTime"]:
+        if df[c].dtype is not "int64":
+            raise ValueError(f"`{c}` datatype is not `int64`")
+
+    def hhmm2minutes(hhmm: int):
+        strhhmm = str(hhmm).zfill(4)
+        hour = int(strhhmm[:2])
+        minutes = int(strhhmm[2:])
+
+        return hour * 60 + minutes
+
+    for c in ["DepTime", "AirTime"]:
+        df[c] = df[c].map(hhmm2minutes)
+
+    return df

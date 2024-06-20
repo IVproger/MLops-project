@@ -38,13 +38,15 @@ def pull_features(df: DataFrame):
     pulled_df.drop(list(remaining_cols), axis=1, inplace=True)
 
     # Fix types
-    for c in [
-        "DepTime",
-        "DepDelay",
-        "ArrTime",
-        "ArrDelay",
-    ]:
-        df[c] = df[c].astype("int64")
+    df["Tail_Number"] = df["Tail_Number"].astype("str")
+
+    # for c in [
+    #     "DepTime",
+    #     "DepDelay",
+    #     "ArrTime",
+    #     "ArrDelay",
+    # ]:
+    #     df[c] = df[c].astype("int64")
     return df
 
 

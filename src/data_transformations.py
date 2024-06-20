@@ -1,23 +1,24 @@
 """Dataframe type for typings"""
 
 from datetime import datetime
+import hashlib
 import pandas as pd
 from pandas import DataFrame
 
 required = [
     "FlightDate",
     "Cancelled",
+    "OriginAirportID",
     "DepTime",
     "DepDelay",
+    "DestAirportID",
     "ArrTime",
+    "ArrDelay",
     "AirTime",
-    "ActualElapsedTime",
     "Distance",
+    "ActualElapsedTime",
     "Operating_Airline",
     "Tail_Number",
-    "OriginAirportID",
-    "DestAirportID",
-    "ArrDelay",
 ]
 
 

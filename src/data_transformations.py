@@ -28,7 +28,6 @@ def pull_features(df: DataFrame):
     """
     # Check that the required columns are there
     for c in required:
-        print(c)
         if c not in df.columns:
             raise ValueError(
                 f"Dataframe lacks one or more of the required columns: {c}"

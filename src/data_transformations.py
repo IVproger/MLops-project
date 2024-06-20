@@ -85,3 +85,31 @@ def encode_op_airline(df: DataFrame) -> DataFrame:
     
     df = pd.get_dummies(df, columns=['Operating_Airline'])
     return df
+
+def hash_tail_number(df: DataFrame) -> DataFrame:
+    """Hash tail numbers
+
+    Args:
+        df (DataFrame): Source dataframe
+
+    Returns:
+        Source dataframe with `Tail_Number` hashed
+    """
+
+    # Check that the column exists
+    if "Tail_Number" not in df.columns:
+        raise ValueError(
+            "Tail_Number column is expected in the dataframe, but not found"
+        )
+
+    # Check datatype
+    if df["Tail_Number"].dtype is str:
+        raise ValueError("Tail_Number column's datatype is not str")
+
+    # Hashing with buckets
+    def hash_feature(text, num_buckets=1000):
+        return int(hashlib.md5(text.encode()).hexdigest(), 16) % num_buckets
+
+    df["Tail_Number"] = df["Tail_Number"].map(hash_feature)
+    return df
+

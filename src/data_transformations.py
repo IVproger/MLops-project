@@ -136,17 +136,18 @@ def sync_times(df: DataFrame) -> DataFrame:
         Source dataframe with `DepTime` & `AirTime` columns' time transformed to minutes
     """
     # Check that the column exists
-    if ["DepTime", "AirTime"] not in df.columns:
-        raise ValueError(
-            "[DepTime, AirTime] columns are expected in the dataframe, but not found"
-        )
-
-    # Check datatype
     for c in ["DepTime", "AirTime"]:
-        if df[c].dtype is not "int64":
-            raise ValueError(f"`{c}` datatype is not `int64`")
+        if c not in df.columns:
+            raise ValueError(
+                "[DepTime, AirTime] columns are expected in the dataframe, but not found"
+            )
 
-    def hhmm2minutes(hhmm: int):
+    # TODO idk how to check for dtypes and is it necessary
+    # # Check datatype
+    # for c in ["DepTime", "AirTime"]:
+    #     if df[c].dtype != "int64":
+    #         raise ValueError(f"`{c}` datatype is not `int64`")
+
         strhhmm = str(hhmm).zfill(4)
         hour = int(strhhmm[:2])
         minutes = int(strhhmm[2:])

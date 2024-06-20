@@ -148,13 +148,20 @@ def sync_times(df: DataFrame) -> DataFrame:
     #     if df[c].dtype != "int64":
     #         raise ValueError(f"`{c}` datatype is not `int64`")
 
+    def hhmm2minutes(raw):
+        hhmm = int(raw)
         strhhmm = str(hhmm).zfill(4)
         hour = int(strhhmm[:2])
         minutes = int(strhhmm[2:])
 
         return hour * 60 + minutes
 
+    def avoidNaN(data):
+        if not (data != data):
+            return hhmm2minutes(data)
+        return data
+
     for c in ["DepTime", "AirTime"]:
-        df[c] = df[c].map(hhmm2minutes)
+        df[c] = df[c].map(avoidNaN)
 
     return df

@@ -36,7 +36,16 @@ def pull_features(df: DataFrame):
     pulled_df = df.copy()
     remaining_cols = set(df.columns) - set(required)
 
-    return pulled_df.drop(list(remaining_cols), axis=1)
+    pulled_df.drop(list(remaining_cols), axis=1, inplace=True)
+
+    # Fix types
+    for c in [
+        "DepTime",
+        "DepDelay",
+        "ArrTime",
+        "ArrDelay",
+    ]:
+        df[c] = df[c].astype("int64")
 
 
 def str2date(df: DataFrame) -> DataFrame:

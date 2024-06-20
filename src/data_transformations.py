@@ -1,6 +1,7 @@
 """Dataframe type for typings"""
 
 from datetime import datetime
+import pandas as pd
 from pandas import DataFrame
 
 required = [
@@ -60,4 +61,26 @@ def str2date(df: DataFrame) -> DataFrame:
     df["FlightDate"] = df["FlightDate"].map(
         lambda d: datetime.strptime(d, "%Y-%m-%d")
     )
+    return df
+
+def encode_op_airline(df: DataFrame) -> DataFrame:
+    """Encode `Operating_Airline` with onehot encoding 
+
+    Args:
+        df (DataFrame): Source dataframe
+
+    Returns:
+        Source dataframe with `Operating_Airline` onehotencoded
+    """
+    # Check that the column exists
+    if "Operating_Airline" not in df.columns:
+        raise ValueError(
+            "Operating_Airline column is expected in the dataframe, but not found"
+        )
+
+    # Check datatype
+    if df["Operating_Airline"].dtype is str:
+        raise ValueError("Operating_Airline column's datatype is not str")
+    
+    df = pd.get_dummies(df, columns=['Operating_Airline'])
     return df

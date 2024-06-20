@@ -68,13 +68,12 @@ def str2date(df: DataFrame) -> DataFrame:
     if df["FlightDate"].dtype is str:
         raise ValueError("FlightDate column's datatype is not str")
 
-    df["FlightDate"] = df["FlightDate"].map(
-        lambda d: datetime.strptime(d, "%Y-%m-%d")
-    )
+    df["FlightDate"] = df["FlightDate"].map(lambda d: datetime.strptime(d, "%Y-%m-%d"))
     return df
 
+
 def encode_op_airline(df: DataFrame) -> DataFrame:
-    """Encode `Operating_Airline` with onehot encoding 
+    """Encode `Operating_Airline` with onehot encoding
 
     Args:
         df (DataFrame): Source dataframe
@@ -91,9 +90,10 @@ def encode_op_airline(df: DataFrame) -> DataFrame:
     # Check datatype
     if df["Operating_Airline"].dtype is str:
         raise ValueError("Operating_Airline column's datatype is not str")
-    
-    df = pd.get_dummies(df, columns=['Operating_Airline'])
+
+    df = pd.get_dummies(df, columns=["Operating_Airline"])
     return df
+
 
 def hash_tail_number(df: DataFrame) -> DataFrame:
     """Hash tail numbers

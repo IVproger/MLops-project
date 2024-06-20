@@ -1,0 +1,62 @@
+,Definition,Description
+0,Year,Year
+1,Quarter,Quarter (1-4)
+2,Month,Month
+3,DayofMonth,Day of Month
+4,DayOfWeek,Day of Week
+5,FlightDate,Flight Date (yyyymmdd)
+6,Marketing_Airline_Network,"Unique Marketing Carrier Code. When the same code has been used by multiple carriers, a numeric suffix is used for earlier users, for example, PA, PA(1), PA(2). Use this field for analysis across a range of years."
+7,Operated_or_Branded_Code_Share_Partners,Reporting Carrier Operated or Branded Code Share Partners
+8,DOT_ID_Marketing_Airline,"An identification number assigned by US DOT to identify a unique airline (carrier). A unique airline (carrier) is defined as one holding and reporting under the same DOT certificate regardless of its Code, Name, or holding company/corporation."
+9,IATA_Code_Marketing_Airline,"Code assigned by IATA and commonly used to identify a carrier. As the same code may have been assigned to different carriers over time, the code is not always unique. For analysis, use the Unique Carrier Code."
+10,Flight_Number_Marketing_Airline,Flight Number
+11,Operating_Airline,"Unique Carrier Code. When the same code has been used by multiple carriers, a numeric suffix is used for earlier users, for example, PA, PA(1), PA(2). Use this field for analysis across a range of years."
+12,DOT_ID_Operating_Airline,"An identification number assigned by US DOT to identify a unique airline (carrier). A unique airline (carrier) is defined as one holding and reporting under the same DOT certificate regardless of its Code, Name, or holding company/corporation."
+13,IATA_Code_Operating_Airline,"Code assigned by IATA and commonly used to identify a carrier. As the same code may have been assigned to different carriers over time, the code is not always unique. For analysis, use the Unique Carrier Code."
+14,Tail_Number,Tail Number
+15,Flight_Number_Operating_Airline,Flight Number
+16,OriginAirportID,"Origin Airport, Airport ID. An identification number assigned by US DOT to identify a unique airport. Use this field for airport analysis across a range of years because an airport can change its airport code and airport codes can be reused."
+17,OriginAirportSeqID,"Origin Airport, Airport Sequence ID. An identification number assigned by US DOT to identify a unique airport at a given point of time. Airport attributes, such as airport name or coordinates, may change over time."
+18,OriginCityMarketID,"Origin Airport, City Market ID. City Market ID is an identification number assigned by US DOT to identify a city market. Use this field to consolidate airports serving the same city market."
+19,Origin,Origin Airport
+20,OriginCityName,"Origin Airport, City Name"
+21,OriginState,"Origin Airport, State Code"
+22,OriginStateFips,"Origin Airport, State Fips"
+23,OriginStateName,"Origin Airport, State Name"
+24,OriginWac,"Origin Airport, World Area Code"
+25,DestAirportID,"Destination Airport, Airport ID. An identification number assigned by US DOT to identify a unique airport. Use this field for airport analysis across a range of years because an airport can change its airport code and airport codes can be reused."
+26,DestAirportSeqID,"Destination Airport, Airport Sequence ID. An identification number assigned by US DOT to identify a unique airport at a given point of time. Airport attributes, such as airport name or coordinates, may change over time."
+27,DestCityMarketID,"Destination Airport, City Market ID. City Market ID is an identification number assigned by US DOT to identify a city market. Use this field to consolidate airports serving the same city market."
+28,Dest,Destination Airport
+29,DestCityName,"Destination Airport, City Name"
+30,DestState,"Destination Airport, State Code"
+31,DestStateFips,"Destination Airport, State Fips"
+32,DestStateName,"Destination Airport, State Name"
+33,DestWac,"Destination Airport, World Area Code"
+34,CRSDepTime,CRS Departure Time (local time: hhmm)
+35,DepTime,Actual Departure Time (local time: hhmm)
+36,DepDelay,Difference in minutes between scheduled and actual departure time. Early departures show negative numbers.
+37,DepDelayMinutes,Difference in minutes between scheduled and actual departure time. Early departures set to 0.
+38,DepDel15,"Departure Delay Indicator, 15 Minutes or More (1=Yes)"
+39,DepartureDelayGroups,"Departure Delay intervals, every (15 minutes from 180)"
+40,DepTimeBlk,"CRS Departure Time Block, Hourly Intervals"
+41,TaxiOut,"Taxi Out Time, in Minutes"
+42,WheelsOff,Wheels Off Time (local time: hhmm)
+43,WheelsOn,Wheels On Time (local time: hhmm)
+44,TaxiIn,"Taxi In Time, in Minutes"
+45,CRSArrTime,CRS Arrival Time (local time: hhmm)
+46,ArrTime,Actual Arrival Time (local time: hhmm)
+47,ArrDelay,Difference in minutes between scheduled and actual arrival time. Early arrivals show negative numbers.
+48,ArrDelayMinutes,Difference in minutes between scheduled and actual arrival time. Early arrivals set to 0.
+49,ArrDel15,"Arrival Delay Indicator, 15 Minutes or More (1=Yes)"
+50,ArrivalDelayGroups,"Arrival Delay intervals, every (15-minutes from 180)"
+51,ArrTimeBlk,"CRS Arrival Time Block, Hourly Intervals"
+52,Cancelled,Cancelled Flight Indicator (1=Yes)
+53,Diverted,Diverted Flight Indicator (1=Yes)
+54,CRSElapsedTime,"CRS Elapsed Time of Flight, in Minutes"
+55,ActualElapsedTime,"Elapsed Time of Flight, in Minutes"
+56,AirTime,"Flight Time, in Minutes"
+57,Distance,Distance between airports (miles)
+58,DistanceGroup,"Distance Intervals, every 250 Miles, for Flight Segment"
+59,DivAirportLandings,Number of Diverted Airport Landings
+60,Airline,Name of the airline company

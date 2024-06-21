@@ -37,17 +37,19 @@ def pull_features(df: DataFrame):
 
     pulled_df.drop(list(remaining_cols), axis=1, inplace=True)
 
-    # Fix types
-    df["Tail_Number"] = df["Tail_Number"].astype("str")
+    # Fix types on pulled_df
+    pulled_df["Tail_Number"] = pulled_df["Tail_Number"].astype("str")
 
+    # Uncomment and apply type corrections on pulled_df
     # for c in [
     #     "DepTime",
     #     "DepDelay",
     #     "ArrTime",
     #     "ArrDelay",
     # ]:
-    #     df[c] = df[c].astype("int64")
-    return df
+    #     pulled_df[c] = pulled_df[c].astype("int64")
+
+    return pulled_df
 
 
 def str2date(df: DataFrame) -> DataFrame:

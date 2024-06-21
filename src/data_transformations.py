@@ -4,7 +4,7 @@ from datetime import datetime
 import hashlib
 import pandas as pd
 from pandas import DataFrame
-from sklearn.preprocessing import Normalizer
+from sklearn.preprocessing import Normalizer, StandardScaler
 
 # List of selected features for future updated dataset
 required = [
@@ -230,6 +230,20 @@ def normalize(df: DataFrame) -> DataFrame:
 
     # Normalize the numeric columns
     df[numeric_cols] = normalizer.fit_transform(df[numeric_cols])
+
+    return df
+    
+def scale(df: DataFrame) -> DataFrame:
+    """Scale the dataframe using sklearn's StandardScaler
+
+    Args:
+        df (DataFrame): Source dataframe
+
+    Returns:
+        DataFrame: Source dataframe scaled
+    """
+    scaler = StandardScaler()
+    df = pd.DataFrame(scaler.fit_transform(df), columns=df.columns)
 
     return df
     

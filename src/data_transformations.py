@@ -4,7 +4,9 @@ from datetime import datetime
 import hashlib
 import pandas as pd
 from pandas import DataFrame
+from sklearn.preprocessing import Normalizer
 
+# List of selected features for future updated dataset
 required = [
     "FlightDate",
     "Cancelled",
@@ -22,7 +24,7 @@ required = [
 ]
 
 
-def pull_features(df: DataFrame):
+def pull_features(df: DataFrame) -> DataFrame:
     """
     Extract only the required features from the dataframe
     """
@@ -129,41 +131,105 @@ def hash_tail_number(df: DataFrame) -> DataFrame:
 
 def sync_times(df: DataFrame) -> DataFrame:
     """
-    Transform `DepTime` & `AirTime` columns to minutes
+    Transform `DepTime` & `AirTime` columns to minutes.
+
+    Args:
+        df (DataFrame): Source dataframe.
+
+    Returns:
+        DataFrame: Source dataframe with `DepTime` & `AirTime` columns' time transformed to minutes.
+    """
+    # Check that the column exists
+    for c in ["DepTime", "AirTime"]:
+        if c not in df.columns:
+            raise ValueError(f"{c} column is expected in the dataframe, but not found.")
+
+    # Check datatype and handle non-numeric values gracefully
+    for c in ["DepTime", "AirTime"]:
+        if not df[c].dtype.kind in 'biufc':  # Checks if the data type is numeric or complex
+            raise ValueError(f"`{c}` datatype is not numeric.")
+
+    def hhmm2minutes(raw):
+        if pd.isna(raw):  # More efficient NaN check
+            return raw
+        hhmm = int(raw)
+        strhhmm = str(hhmm).zfill(4)
+        hour = int(strhhmm[:2])
+        minutes = int(strhhmm[2:])
+        return hour * 60 + minutes
+
+    for c in ["DepTime", "AirTime"]:
+        df[c] = df[c].apply(hhmm2minutes)  # Using apply for potential NaN handling
+
+    return df
+
+def convert_to_epoch(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Convert `FlightDate` column to seconds since epoch (January 1, 1970).
+
+    Args:
+        df (pd.DataFrame): Source dataframe with a `FlightDate` column.
+
+    Returns:
+        pd.DataFrame: DataFrame with `FlightDate` column converted to epoch time.
+    """
+    # Ensure FlightDate is in datetime format
+    df['FlightDate'] = pd.to_datetime(df['FlightDate'])
+
+    # Convert FlightDate to epoch time
+    df['FlightDate'] = (df['FlightDate'] - pd.Timestamp("1970-01-01")) // pd.Timedelta('1s')
+
+    return df
+
+def handle_missing_values(df: DataFrame) -> DataFrame:
+    """Handle missing values in the dataframe
 
     Args:
         df (DataFrame): Source dataframe
 
     Returns:
-        Source dataframe with `DepTime` & `AirTime` columns' time transformed to minutes
+        Source dataframe with missing values handled
     """
-    # Check that the column exists
-    for c in ["DepTime", "AirTime"]:
-        if c not in df.columns:
-            raise ValueError(
-                "[DepTime, AirTime] columns are expected in the dataframe, but not found"
-            )
-
-    # TODO idk how to check for dtypes and is it necessary
-    # # Check datatype
-    # for c in ["DepTime", "AirTime"]:
-    #     if df[c].dtype != "int64":
-    #         raise ValueError(f"`{c}` datatype is not `int64`")
-
-    def hhmm2minutes(raw):
-        hhmm = int(raw)
-        strhhmm = str(hhmm).zfill(4)
-        hour = int(strhhmm[:2])
-        minutes = int(strhhmm[2:])
-
-        return hour * 60 + minutes
-
-    def avoidNaN(data):
-        if not (data != data):
-            return hhmm2minutes(data)
-        return data
-
-    for c in ["DepTime", "AirTime"]:
-        df[c] = df[c].map(avoidNaN)
+    # Check for missing values
+    if df.isnull().sum().sum() > 0:
+        # Fill missing values with 0
+        df.fillna(0, inplace=True)
 
     return df
+
+def handle_duplicates(df: DataFrame) -> DataFrame:
+    """Handle duplicates in the dataframe
+
+    Args:
+        df (DataFrame): Source dataframe
+
+    Returns:
+        Source dataframe with duplicates handled
+    """
+    # Check for duplicates
+    if df.duplicated().sum() > 0:
+        # Drop duplicates
+        df.drop_duplicates(inplace=True)
+
+    return df
+
+def normalize(df: DataFrame) -> DataFrame:
+    """Normalize the dataframe using sklearn's Normalizer
+
+    Args:
+        df (DataFrame): Source dataframe
+
+    Returns:
+        DataFrame: Source dataframe normalized
+    """
+    # Initialize the Normalizer
+    normalizer = Normalizer()
+
+    # Select numeric columns for normalization
+    numeric_cols = df.select_dtypes(include=['float64', 'int64']).columns
+
+    # Normalize the numeric columns
+    df[numeric_cols] = normalizer.fit_transform(df[numeric_cols])
+
+    return df
+    

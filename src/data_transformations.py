@@ -2,13 +2,20 @@
 
 from datetime import datetime
 import hashlib
+from typing_extensions import deprecated
+import numpy as np
 import pandas as pd
 from pandas import DataFrame
 from sklearn.preprocessing import Normalizer, StandardScaler
+from sklearn.pipeline import FunctionTransformer
+from sklearn.preprocessing import Normalizer
 
-# List of selected features for future updated dataset
 required = [
-    "FlightDate",
+    "Year",
+    "Month",
+    "DayofMonth",
+    "Year",
+    # "FlightDate",
     "Cancelled",
     "OriginAirportID",
     "DepTime",
@@ -22,6 +29,14 @@ required = [
     "Operating_Airline",
     "Tail_Number",
 ]
+
+
+def sin_transformer(period):
+    return FunctionTransformer(lambda x: np.sin(x / period * 2 * np.pi))
+
+
+def cos_transformer(period):
+    return FunctionTransformer(lambda x: np.cos(x / period * 2 * np.pi))
 
 
 def pull_features(df: DataFrame) -> DataFrame:
@@ -42,18 +57,34 @@ def pull_features(df: DataFrame) -> DataFrame:
     # Fix types on pulled_df
     pulled_df["Tail_Number"] = pulled_df["Tail_Number"].astype("str")
 
-    # Uncomment and apply type corrections on pulled_df
-    # for c in [
-    #     "DepTime",
-    #     "DepDelay",
-    #     "ArrTime",
-    #     "ArrDelay",
-    # ]:
-    #     pulled_df[c] = pulled_df[c].astype("int64")
-
     return pulled_df
 
 
+def fix_dtypes(df: DataFrame) -> DataFrame:
+    """Fixes datatypes for numerical columns
+
+    Args:
+        df (DataFrame): Source dataframe
+
+    Returns:
+        DataFrame: Source dataframe with types fixed
+    """
+    for c in [
+        "DepTime",
+        "DepDelay",
+        "ArrTime",
+        "AirTime",
+        "ActualElapsedTime",
+        "Distance",
+        "OriginAirportID",
+        "DestAirportID",
+        "ArrDelay",
+    ]:
+        df[c] = df[c].astype("int64")
+    return df
+
+
+@deprecated
 def str2date(df: DataFrame) -> DataFrame:
     """Transform FlightDate column from str to date.
     Transformations occur in-place
@@ -129,6 +160,58 @@ def hash_tail_number(df: DataFrame) -> DataFrame:
     return df
 
 
+def process_time_data(df: DataFrame) -> DataFrame:
+    """
+    Process time-related data
+
+    Args:
+        df (DataFrame): Source dataframe.
+
+    Returns:
+        DataFrame: Source dataframe with time-related data transformed.
+    """
+    # Check that the column exists
+
+    for c in ["DepTime", "Month", "DayofMonth"]:
+        if c not in df.columns:
+            raise ValueError(f"{c} is expected in the dataframe, but not found.")
+
+    # Encoding month data
+    df["Month_sin"] = sin_transformer(12).fit_transform(df["Month"])
+    df["Month_cos"] = cos_transformer(12).fit_transform(df["Month"])
+
+    # Encoding day data
+    df["DayofMonth_sin"] = sin_transformer(31).fit_transform(df["DayofMonth"])
+    df["DayofMonth_cos"] = cos_transformer(31).fit_transform(df["DayofMonth"])
+
+    # Encoding hours and minutes
+    df["DepTimeHH"] = df["DepTime"].apply(lambda hhmm: hhmm // 100)
+    df["DepTimeMM"] = df["DepTime"].apply(lambda hhmm: hhmm % 100)
+
+    df["DepTimeHH_sin"] = sin_transformer(24).fit_transform(df["DepTimeHH"])
+    df["DepTimeHH_cos"] = cos_transformer(24).fit_transform(df["DepTimeHH"])
+
+    df["DepTimeMM_sin"] = sin_transformer(60).fit_transform(df["DepTimeMM"])
+    df["DepTimeMM_cos"] = cos_transformer(60).fit_transform(df["DepTimeMM"])
+
+    # Drop old columns
+    df.drop(
+        [
+            "Month",
+            "DayofMonth",
+            "DepTime",
+            "DepTimeHH",
+            "DepTimeMM",
+            "Year",  # TROLLING
+        ],
+        axis=1,
+        inplace=True,
+    )
+
+    return df
+
+
+@deprecated
 def sync_times(df: DataFrame) -> DataFrame:
     """
     Transform `DepTime` & `AirTime` columns to minutes.
@@ -146,7 +229,9 @@ def sync_times(df: DataFrame) -> DataFrame:
 
     # Check datatype and handle non-numeric values gracefully
     for c in ["DepTime", "AirTime"]:
-        if not df[c].dtype.kind in 'biufc':  # Checks if the data type is numeric or complex
+        if (
+            not df[c].dtype.kind in "biufc"
+        ):  # Checks if the data type is numeric or complex
             raise ValueError(f"`{c}` datatype is not numeric.")
 
     def hhmm2minutes(raw):
@@ -163,6 +248,8 @@ def sync_times(df: DataFrame) -> DataFrame:
 
     return df
 
+
+@deprecated
 def convert_to_epoch(df: pd.DataFrame) -> pd.DataFrame:
     """
     Convert `FlightDate` column to seconds since epoch (January 1, 1970).
@@ -174,12 +261,15 @@ def convert_to_epoch(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: DataFrame with `FlightDate` column converted to epoch time.
     """
     # Ensure FlightDate is in datetime format
-    df['FlightDate'] = pd.to_datetime(df['FlightDate'])
+    df["FlightDate"] = pd.to_datetime(df["FlightDate"])
 
     # Convert FlightDate to epoch time
-    df['FlightDate'] = (df['FlightDate'] - pd.Timestamp("1970-01-01")) // pd.Timedelta('1s')
+    df["FlightDate"] = (df["FlightDate"] - pd.Timestamp("1970-01-01")) // pd.Timedelta(
+        "1s"
+    )
 
     return df
+
 
 def handle_missing_values(df: DataFrame) -> DataFrame:
     """Handle missing values in the dataframe
@@ -197,6 +287,7 @@ def handle_missing_values(df: DataFrame) -> DataFrame:
 
     return df
 
+
 def handle_duplicates(df: DataFrame) -> DataFrame:
     """Handle duplicates in the dataframe
 
@@ -213,6 +304,8 @@ def handle_duplicates(df: DataFrame) -> DataFrame:
 
     return df
 
+
+@deprecated
 def normalize(df: DataFrame) -> DataFrame:
     """Normalize the dataframe using sklearn's Normalizer
 
@@ -226,7 +319,7 @@ def normalize(df: DataFrame) -> DataFrame:
     normalizer = Normalizer()
 
     # Select numeric columns for normalization
-    numeric_cols = df.select_dtypes(include=['float64', 'int64']).columns
+    numeric_cols = df.select_dtypes(include=["float64", "int64"]).columns
 
     # Normalize the numeric columns
     df[numeric_cols] = normalizer.fit_transform(df[numeric_cols])

@@ -6,9 +6,12 @@ import gdown
 import pandas as pd
 from omegaconf import DictConfig, OmegaConf
 import hydra
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 
 from src.data_quality import load_context_and_sample_data, define_expectations
-
 
 @hydra.main(version_base=None, config_path="../configs", config_name="main")
 def sample_data(cfg: DictConfig):

@@ -1,6 +1,7 @@
 """
 Import the necessary libraries and modules for the data sampling script.
 """
+
 import os
 import gdown
 import pandas as pd
@@ -9,11 +10,12 @@ import hydra
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "..")))
 
 from src.data_quality import load_context_and_sample_data, define_expectations
 
-@hydra.main(version_base=None, config_path="../configs", config_name="main")
+
+@hydra.main(version_base=None, config_path="configs", config_name="main")
 def sample_data(cfg: DictConfig):
     """
     The function to sample the data from the given URL and save it to the sample path.
@@ -25,7 +27,7 @@ def sample_data(cfg: DictConfig):
         if not os.path.exists(datastore_path):
             print("Downloading data from: ", cfg.data.url)
             gdown.download(cfg.data.url, cfg.data.output, quiet=False)
-        # Read the data from the source 
+        # Read the data from the source
         data = pd.read_csv(datastore_path)
         # We should be sure that every time when we take the sample,
         # it should be different from the previous one.
@@ -69,7 +71,7 @@ def validate_initial_data(cfg: DictConfig):
 
 
 if __name__ == "__main__":
-    cfg = OmegaConf.load("../configs/main.yaml")
+    cfg = OmegaConf.load("configs/main.yaml")
     sample = sample_data(cfg)
     # save the generated sample of data
     sample.to_csv(cfg.data.sample_path, index=False)

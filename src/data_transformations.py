@@ -8,13 +8,11 @@ import pandas as pd
 from pandas import DataFrame
 from sklearn.preprocessing import Normalizer, StandardScaler
 from sklearn.pipeline import FunctionTransformer
-from sklearn.preprocessing import Normalizer
 
 required = [
     "Year",
     "Month",
     "DayofMonth",
-    "Year",
     # "FlightDate",
     "Cancelled",
     "OriginAirportID",
@@ -82,32 +80,6 @@ def fix_dtypes(df: DataFrame) -> DataFrame:
     ]:
         df[c] = df[c].astype("int64")
     return df
-
-
-@deprecated
-def str2date(df: DataFrame) -> DataFrame:
-    """Transform FlightDate column from str to date.
-    Transformations occur in-place
-
-    Args:
-        df (DataFrame): Source dataframe
-
-    Returns:
-        DataFrame: Source dataframe with FlightDate mapped to datetime datatype
-    """
-    # Check that the column exists
-    if "FlightDate" not in df.columns:
-        raise ValueError(
-            "FlightDate column is expected in the dataframe, but not found"
-        )
-
-    # Check datatype
-    if df["FlightDate"].dtype is str:
-        raise ValueError("FlightDate column's datatype is not str")
-
-    df["FlightDate"] = df["FlightDate"].map(lambda d: datetime.strptime(d, "%Y-%m-%d"))
-    return df
-
 
 def encode_op_airline(df: DataFrame) -> DataFrame:
     """Encode `Operating_Airline` with onehot encoding
@@ -210,67 +182,6 @@ def process_time_data(df: DataFrame) -> DataFrame:
 
     return df
 
-
-@deprecated
-def sync_times(df: DataFrame) -> DataFrame:
-    """
-    Transform `DepTime` & `AirTime` columns to minutes.
-
-    Args:
-        df (DataFrame): Source dataframe.
-
-    Returns:
-        DataFrame: Source dataframe with `DepTime` & `AirTime` columns' time transformed to minutes.
-    """
-    # Check that the column exists
-    for c in ["DepTime", "AirTime"]:
-        if c not in df.columns:
-            raise ValueError(f"{c} column is expected in the dataframe, but not found.")
-
-    # Check datatype and handle non-numeric values gracefully
-    for c in ["DepTime", "AirTime"]:
-        if (
-            not df[c].dtype.kind in "biufc"
-        ):  # Checks if the data type is numeric or complex
-            raise ValueError(f"`{c}` datatype is not numeric.")
-
-    def hhmm2minutes(raw):
-        if pd.isna(raw):  # More efficient NaN check
-            return raw
-        hhmm = int(raw)
-        strhhmm = str(hhmm).zfill(4)
-        hour = int(strhhmm[:2])
-        minutes = int(strhhmm[2:])
-        return hour * 60 + minutes
-
-    for c in ["DepTime", "AirTime"]:
-        df[c] = df[c].apply(hhmm2minutes)  # Using apply for potential NaN handling
-
-    return df
-
-
-@deprecated
-def convert_to_epoch(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Convert `FlightDate` column to seconds since epoch (January 1, 1970).
-
-    Args:
-        df (pd.DataFrame): Source dataframe with a `FlightDate` column.
-
-    Returns:
-        pd.DataFrame: DataFrame with `FlightDate` column converted to epoch time.
-    """
-    # Ensure FlightDate is in datetime format
-    df["FlightDate"] = pd.to_datetime(df["FlightDate"])
-
-    # Convert FlightDate to epoch time
-    df["FlightDate"] = (df["FlightDate"] - pd.Timestamp("1970-01-01")) // pd.Timedelta(
-        "1s"
-    )
-
-    return df
-
-
 def handle_missing_values(df: DataFrame) -> DataFrame:
     """Handle missing values in the dataframe
 
@@ -287,7 +198,6 @@ def handle_missing_values(df: DataFrame) -> DataFrame:
 
     return df
 
-
 def handle_duplicates(df: DataFrame) -> DataFrame:
     """Handle duplicates in the dataframe
 
@@ -301,28 +211,6 @@ def handle_duplicates(df: DataFrame) -> DataFrame:
     if df.duplicated().sum() > 0:
         # Drop duplicates
         df.drop_duplicates(inplace=True)
-
-    return df
-
-
-@deprecated
-def normalize(df: DataFrame) -> DataFrame:
-    """Normalize the dataframe using sklearn's Normalizer
-
-    Args:
-        df (DataFrame): Source dataframe
-
-    Returns:
-        DataFrame: Source dataframe normalized
-    """
-    # Initialize the Normalizer
-    normalizer = Normalizer()
-
-    # Select numeric columns for normalization
-    numeric_cols = df.select_dtypes(include=["float64", "int64"]).columns
-
-    # Normalize the numeric columns
-    df[numeric_cols] = normalizer.fit_transform(df[numeric_cols])
 
     return df
     

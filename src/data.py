@@ -68,6 +68,19 @@ def validate_initial_data(cfg: DictConfig):
             print("Validation successful.")
     except Exception as e:
         print("Error in validating the data: ", e)
+        
+
+def read_datastore():
+    pass
+
+def preprocess_data():
+    pass
+
+def validate_features():
+    pass
+
+def load_features():
+    pass
 
 
 if __name__ == "__main__":

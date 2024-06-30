@@ -125,3 +125,11 @@ $ poetry install
     $ airflow db reset
     $ airflow db init
     ```
+5. Soft link folders: *(maybe it is not needed, pay close attention)*
+    ```
+    $ ln -s pipelines services/airflow/dags
+    ```
+6. Run the airflow scripts: *(WIP, does not work. Check the script and run 3 processes manually)*
+    ```
+    $ bash scripts/airflow.sh
+    ```

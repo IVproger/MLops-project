@@ -11,6 +11,4 @@ echo "export AIRFLOW_HOME=\$PWD/services/airflow" >> $activate_file
 echo "export PYTHONPATH=\$PWD/src" >> $activate_file
 
 # Restart venv
-deactivate
-source .venv/bin/activate
-echo ".venv/bin/activate is extended"
+echo ".venv/bin/activate is extended. Restart your terminal"

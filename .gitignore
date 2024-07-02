@@ -165,4 +165,6 @@ cython_debug/
 #.idea/
 
 # Ignore airflow configs (these are machine-sensitive)
-services/airflow
+services/airflow/*
+!services/airflow/dags
+

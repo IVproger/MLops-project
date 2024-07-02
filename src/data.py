@@ -54,7 +54,7 @@ def sample_data(cfg: DictConfig):
         OmegaConf.save(config=cfg, f="configs/main.yaml")
 
         with open("configs/data_version.txt", "w", encoding="utf-8") as f:
-            f.write(new_version)
+            f.write(new_version + "\n")
 
         return resulted_sample
     except Exception as e:

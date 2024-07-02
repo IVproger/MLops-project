@@ -75,11 +75,13 @@ def validate_initial_data(cfg: DictConfig):
 
         if checkpoint_result.success:
             print("Validation successful.")
+            return True
         else:
             print("Validation failed.")
             print(checkpoint_result)
     except Exception as e:
         print("Error in validating the data: ", e)
+    return False
 
 
 def read_datastore():
@@ -100,8 +102,15 @@ def load_features():
 
 if __name__ == "__main__":
     cfg = OmegaConf.load("configs/main.yaml")
+
+    # Take a new sample
     sample = sample_data(cfg)
-    # save the generated sample of data
+    if sample is None:
+        sys.exit(1)
+
+    # Save the generated sample of data
     sample.to_csv(cfg.data.sample_path, index=False)
-    # validate the initial data
-    # validate_initial_data(cfg)
+
+    # Validate the data
+    if not validate_initial_data(cfg):
+        sys.exit(1)

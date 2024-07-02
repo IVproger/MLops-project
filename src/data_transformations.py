@@ -1,12 +1,10 @@
 """Dataframe type for typings"""
 
-from datetime import datetime
 import hashlib
-from typing_extensions import deprecated
 import numpy as np
 import pandas as pd
 from pandas import DataFrame
-from sklearn.preprocessing import Normalizer, StandardScaler
+from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import FunctionTransformer
 
 required = [
@@ -80,6 +78,7 @@ def fix_dtypes(df: DataFrame) -> DataFrame:
     ]:
         df[c] = df[c].astype("int64")
     return df
+
 
 def encode_op_airline(df: DataFrame) -> DataFrame:
     """Encode `Operating_Airline` with onehot encoding
@@ -182,6 +181,7 @@ def process_time_data(df: DataFrame) -> DataFrame:
 
     return df
 
+
 def handle_missing_values(df: DataFrame) -> DataFrame:
     """Handle missing values in the dataframe
 
@@ -198,6 +198,7 @@ def handle_missing_values(df: DataFrame) -> DataFrame:
 
     return df
 
+
 def handle_duplicates(df: DataFrame) -> DataFrame:
     """Handle duplicates in the dataframe
 
@@ -213,7 +214,8 @@ def handle_duplicates(df: DataFrame) -> DataFrame:
         df.drop_duplicates(inplace=True)
 
     return df
-    
+
+
 def scale(df: DataFrame) -> DataFrame:
     """Scale the dataframe using sklearn's StandardScaler
 
@@ -227,4 +229,3 @@ def scale(df: DataFrame) -> DataFrame:
     df = pd.DataFrame(scaler.fit_transform(df), columns=df.columns)
 
     return df
-    

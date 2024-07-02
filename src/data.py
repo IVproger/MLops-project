@@ -8,7 +8,6 @@ import pandas as pd
 from omegaconf import DictConfig, OmegaConf
 import hydra
 import sys
-import os
 
 sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "..")))
 
@@ -68,16 +67,19 @@ def validate_initial_data(cfg: DictConfig):
             print("Validation successful.")
     except Exception as e:
         print("Error in validating the data: ", e)
-        
+
 
 def read_datastore():
     pass
 
+
 def preprocess_data():
     pass
 
+
 def validate_features():
     pass
+
 
 def load_features():
     pass

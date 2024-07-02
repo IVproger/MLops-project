@@ -1,1 +1,1 @@
-services/airflow/dags
+./services/airflow/dags

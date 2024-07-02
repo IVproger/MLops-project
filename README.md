@@ -39,7 +39,7 @@ $ bash scripts/test_data.sh
    ```
 5. Install dependencies
    ```bash
-   $ poetry install
+   $ poetry install --with dev
    ```
 6. Set up pre-commit hooks
    ```bash

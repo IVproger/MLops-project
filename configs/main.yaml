@@ -3,4 +3,8 @@ data:
   output: datastore/data.csv
   datastore_path: datastore/data.csv
   sample_path: data/samples/sample.csv
+  sample_version_path: data/samples/sample.csv.dvc
   sample_size: 0.2
+  last_included_row_number: 0
+  data_version: ""
+  version_number: 0

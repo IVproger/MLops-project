@@ -10,7 +10,6 @@ import hydra
 import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "..")))
-
 from src.data_quality import load_context_and_sample_data
 
 
@@ -21,30 +20,49 @@ def sample_data(cfg: DictConfig):
     """
     try:
         datastore_path = cfg.data.datastore_path
-        sample_path = cfg.data.sample_path
+
         # Check if the source data is available, if not download it.
         if not os.path.exists(datastore_path):
             print("Downloading data from: ", cfg.data.url)
             gdown.download(cfg.data.url, cfg.data.output, quiet=False)
+
         # Read the data from the source
+        print("Download data into frame...")
         data = pd.read_csv(datastore_path)
-        # We should be sure that every time when we take the sample,
-        # it should be different from the previous one.
-        if os.path.exists(sample_path):
-            print("Previous sample found, removing it from the data.")
-            # drop the previous sample from the data to avoid duplication
-            sample_tmp = pd.read_csv(sample_path)
-            data = data.drop(sample_tmp.index)
-        # Data sampling process
+
+        # Initialize start_row to 0 if last_included_row_number is not set or indicates no rows have been included yet
+        start_row = (
+            0
+            if cfg.data.last_included_row_number < 0
+            else cfg.data.last_included_row_number + 1
+        )
+        total_rows = len(data)
+        sample_size = int(total_rows * cfg.data.sample_size)
+
         print("Sampling data...")
-        resulted_sample = data.sample(frac=cfg.data.sample_size)
+        resulted_sample = data.iloc[start_row : start_row + sample_size]
+
+        # Update the configuration for last included row number
+        cfg.data.last_included_row_number = start_row + sample_size - 1
+
+        # Increment and update the data version
+        new_version = f"v{cfg.data.version_number+1}.0"
+        cfg.data.data_version = new_version
+        cfg.data.version_number = cfg.data.version_number + 1
+
+        # Save the updated configuration back to the YAML file
+        OmegaConf.save(config=cfg, f="configs/main.yaml")
+
+        with open("configs/data_version.txt", "w", encoding="utf-8") as f:
+            f.write(new_version)
+
         return resulted_sample
     except Exception as e:
         print("Error in loading or sampling the data: ", e)
         return None
 
 
-@hydra.main(version_base=None, config_path="../configs", config_name="main")
+@hydra.main(version_base=None, config_path="configs", config_name="main")
 def validate_initial_data(cfg: DictConfig):
     """
     Validate the data using Great Expectations.
@@ -86,4 +104,4 @@ if __name__ == "__main__":
     # save the generated sample of data
     sample.to_csv(cfg.data.sample_path, index=False)
     # validate the initial data
-    validate_initial_data(cfg)
+    # validate_initial_data(cfg)

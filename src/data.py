@@ -7,9 +7,7 @@ import gdown
 import pandas as pd
 from omegaconf import DictConfig, OmegaConf
 import hydra
-import sys
-
-sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "..")))
+import copy
 from src.data_quality import load_context_and_sample_data
 
 
@@ -17,6 +15,7 @@ from src.data_quality import load_context_and_sample_data
 def sample_data(cfg: DictConfig):
     """
     The function to sample the data from the given URL and save it to the sample path.
+    Returns both the sampled data and the updated configuration settings without updating the real config files.
     """
     try:
         datastore_path = cfg.data.datastore_path
@@ -42,24 +41,22 @@ def sample_data(cfg: DictConfig):
         print("Sampling data...")
         resulted_sample = data.iloc[start_row : start_row + sample_size]
 
-        # Update the configuration for last included row number
-        cfg.data.last_included_row_number = start_row + sample_size - 1
+        # Create a deep copy of cfg to modify without affecting the original
+        updated_cfg = copy.deepcopy(cfg)
 
-        # Increment and update the data version
-        new_version = f"v{cfg.data.version_number+1}.0"
-        cfg.data.data_version = new_version
-        cfg.data.version_number = cfg.data.version_number + 1
+        # Update the configuration for last included row number in the copy
+        updated_cfg.data.last_included_row_number = start_row + sample_size - 1
 
-        # Save the updated configuration back to the YAML file
-        OmegaConf.save(config=cfg, f="configs/main.yaml")
+        # Increment and update the data version in the copy
+        new_version = f"v{updated_cfg.data.version_number+1}.0"
+        updated_cfg.data.data_version = new_version
+        updated_cfg.data.version_number = updated_cfg.data.version_number + 1
 
-        with open("configs/data_version.txt", "w", encoding="utf-8") as f:
-            f.write(new_version + "\n")
-
-        return resulted_sample
+        # Return both the sampled data and the updated configuration
+        return resulted_sample, updated_cfg
     except Exception as e:
         print("Error in loading or sampling the data: ", e)
-        return None
+        return None, cfg
 
 
 @hydra.main(version_base=None, config_path="configs", config_name="main")
@@ -104,13 +101,17 @@ if __name__ == "__main__":
     cfg = OmegaConf.load("configs/main.yaml")
 
     # Take a new sample
-    sample = sample_data(cfg)
-    if sample is None:
-        sys.exit(1)
+    sample, new_cfg = sample_data(cfg)
 
-    # Save the generated sample of data
-    sample.to_csv(cfg.data.sample_path, index=False)
+    if sample is None:
+        raise ValueError("Data sampling failed. Exiting...")
 
     # Validate the data
     if not validate_initial_data(cfg):
-        sys.exit(1)
+        raise ValueError("Data validation failed. Exiting...")
+
+    # Save the generated sample of data and new configuration settings
+    sample.to_csv(cfg.data.sample_path, index=False)
+    OmegaConf.save(new_cfg, "configs/main.yaml")
+    with open("configs/data_version.txt", "w", encoding="utf-8") as file:
+        file.write(new_cfg.data.data_version + "\n")

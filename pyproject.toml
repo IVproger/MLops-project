@@ -22,6 +22,10 @@ seaborn = "^0.13.2"
 pylint = "^3.2.5"
 great-expectations = "^0.18.17"
 zenml = {version = "^0.58.2", extras = ["server"]}
+flask-session = "0.5.0"
+pytzdata = "^2020.1"
+pendulum = "2.1.2"
+connexion = "2.14.2"
 
 [tool.poetry.group.dev]
 [tool.poetry.group.dev.dependencies]

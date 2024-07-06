@@ -12,14 +12,14 @@ with DAG(
 ) as dag:
     airflow_home = os.environ.get("AIRFLOW_HOME")
 
-    run_test_sh = BashOperator(
-        task_id="extract_data_sh",
+    extract_data = BashOperator(
+        task_id="extract_data",
         bash_command=f"cd {airflow_home} && cd ../../ && python3 -m src.data",
     )
 
-    run_push_sample_version_sh = BashOperator(
-        task_id="push_sample_version.sh",
-        bash_command=f"cd {airflow_home} && cd ../../ && scripts/push_sample_version.sh ",
+    load_to_datastore = BashOperator(
+        task_id="load_to_datastore",
+        bash_command=f"cd {airflow_home} && cd ../../ && dvc add data/samples/sample.csv && dvc push",
     )
 
-    run_test_sh >> run_push_sample_version_sh
+    extract_data >> load_to_datastore

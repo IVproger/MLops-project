@@ -3,16 +3,21 @@ Import the necessary libraries and modules for the data sampling script.
 """
 
 import os
-import gdown
-import pandas as pd
-from omegaconf import DictConfig, OmegaConf
 import copy
-import great_expectations as gx
 import math
+
+import gdown
+import numpy as np
+import pandas as pd
+import zenml
+from omegaconf import DictConfig, OmegaConf
+import great_expectations as gx
 from great_expectations.datasource.fluent import PandasDatasource
 
+from src import data_transformations
 
-def sample_data(cfg):
+
+def sample_data(cfg: DictConfig):
     """
     The function to sample the data from the given URL and save it to the sample path.
     Returns both the sampled data and the updated configuration settings without updating the real config files.
@@ -101,20 +106,51 @@ def validate_initial_data(cfg: DictConfig, df: pd.DataFrame):
     return False
 
 
-def read_datastore():
-    pass
+def read_datastore() -> tuple[pd.DataFrame, str]:
+    """
+    Read the sample data.
+    """
+    cfg = OmegaConf.load("configs/main.yaml")
+    data = pd.read_csv(cfg.data.sample_path)
+    version = open("configs/data_version.txt", "r").read().strip()
+    return data, version
 
 
-def preprocess_data():
-    pass
+def preprocess_data(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Preprocess the data to extract features and target.
+    """
+    # TODO: Apply correct transformations
+    df = data_transformations.pull_features(df)
+    df = data_transformations.handle_missing_values(df)
+    df = data_transformations.handle_duplicates(df)
+    df = data_transformations.fix_dtypes(df)
+    df = data_transformations.encode_op_airline(df)
+    df = data_transformations.hash_tail_number(df)
+    df: pd.DataFrame = data_transformations.process_time_data(df)
+    df["On-time"] = np.where((df["DepDelay"] <= 0) & (~df["Cancelled"]), True, False)
+    df["Target"] = np.select([df["On-time"], df["Cancelled"]], [0, 1])
+    df = df.drop(["Cancelled", "On-time"], axis=1)
+    X = df.drop(["Target"], axis=1)
+    y = df[["Target"]]
+    return X, y
 
 
-def validate_features():
-    pass
+def validate_features(
+    X: pd.DataFrame, y: pd.DataFrame
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Validate the features and target using Great Expectations.
+    """
+    # TODO: Implement feature validation
+    return X, y
 
 
-def load_features():
-    pass
+def load_features(X: pd.DataFrame, y: pd.DataFrame, version: str) -> None:
+    """
+    Save the features and target as artifact.
+    """
+    zenml.save_artifact(data=[X, y], name="features_target", tags=[version])
 
 
 if __name__ == "__main__":

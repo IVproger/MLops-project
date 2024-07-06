@@ -1,25 +1,38 @@
-from datetime import datetime
-from airflow import DAG
-from airflow.operators.bash import BashOperator
 import os
+from datetime import datetime
 
-with DAG(
-    "data_extraction_workflow",
-    start_date=datetime(2024, 1, 1),
-    description="A DAG for data extraction, validation, versioning, and loading",
-    schedule_interval="*/5 * * * *",
+from airflow.decorators import dag
+from airflow.operators.bash import BashOperator
+
+AIRFLOW_HOME = os.environ.get("AIRFLOW_HOME")
+PROJECT_ROOT = os.path.join(AIRFLOW_HOME, "project")
+
+
+@dag(
+    "data_extraction_dag",
+    description="A DAG for extraction of a new sample, validation, versioning using DVC, and loading to DVC data store.",
+    start_date=datetime(2024, 7, 1),
+    schedule_interval="*/5 * * * *",  # Every 5 minutes
     catchup=False,
-) as dag:
-    airflow_home = os.environ.get("AIRFLOW_HOME")
-
+)
+def data_extract():
+    # Extract data, validate it, and version it
     extract_data = BashOperator(
         task_id="extract_data",
-        bash_command=f"cd {airflow_home} && cd project && python3 -m src.data",
+        bash_command="python3 -m src.data",
+        cwd=PROJECT_ROOT,
     )
 
+    # Load the data to the DVC data store
     load_to_datastore = BashOperator(
         task_id="load_to_datastore",
-        bash_command=f"cd {airflow_home} && cd project && dvc add data/samples/sample.csv && dvc push",
+        bash_command="dvc add data/samples/sample.csv && dvc push",
+        cwd=PROJECT_ROOT,
     )
 
+    # Define the task dependencies
     extract_data >> load_to_datastore
+
+
+# Initialize the DAG
+data_extraction_dag = data_extract()

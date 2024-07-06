@@ -101,8 +101,8 @@ fluent_datasources:
     type: pandas
     assets:
       sample_file:
-        type: csv
-        filepath_or_buffer: data/samples/sample.csv
+        type: dataframe
+        batch_metadata: {}
 notebooks:
 include_rendered_content:
   globally: false

@@ -8,10 +8,11 @@ import pandas as pd
 from omegaconf import DictConfig, OmegaConf
 import copy
 import great_expectations as gx
+import math
 from great_expectations.datasource.fluent import PandasDatasource
 
 
-def sample_data(cfg: DictConfig):
+def sample_data(cfg):
     """
     The function to sample the data from the given URL and save it to the sample path.
     Returns both the sampled data and the updated configuration settings without updating the real config files.
@@ -22,29 +23,43 @@ def sample_data(cfg: DictConfig):
         # Check if the source data is available, if not download it.
         if not os.path.exists(datastore_path):
             print("Downloading data from: ", cfg.data.url)
-            gdown.download(cfg.data.url, cfg.data.output, quiet=False)
+            gdown.download(cfg.data.url, datastore_path, quiet=False)
 
-        # Read the data from the source
-        print("Download data into frame...")
-        data = pd.read_csv(datastore_path)
+        # Determine the total number of rows in the file without loading it entirely
+        total_rows = sum(1 for row in open(datastore_path, "r")) - 1  # Exclude header
 
-        # Initialize start_row to 0 if last_included_row_number is not set or indicates no rows have been included yet
+        # Calculate the sample size
+        sample_size = math.ceil(total_rows * cfg.data.sample_size)
+
+        # Determine the start row for sampling
         start_row = (
             0
             if cfg.data.last_included_row_number < 0
             else cfg.data.last_included_row_number + 1
         )
-        total_rows = len(data)
-        sample_size = int(total_rows * cfg.data.sample_size)
+
+        # If the start_row + sample_size exceeds total_rows, start from the beginning
+        if start_row + sample_size > total_rows:
+            start_row = 0  # Reset to start from the beginning
+
+        # Load only the necessary rows into memory
+        skiprows = range(
+            1, start_row + 1
+        )  # Skip rows before the start_row, keeping header
+        nrows = sample_size  # Number of rows to read
+        data = pd.read_csv(datastore_path, skiprows=skiprows, nrows=nrows)
 
         print("Sampling data...")
-        resulted_sample = data.iloc[start_row : start_row + sample_size]
+        resulted_sample = data
 
         # Create a deep copy of cfg to modify without affecting the original
         updated_cfg = copy.deepcopy(cfg)
 
         # Update the configuration for last included row number in the copy
-        updated_cfg.data.last_included_row_number = start_row + sample_size - 1
+        new_last_included_row_number = start_row + sample_size - 1
+        updated_cfg.data.last_included_row_number = (
+            new_last_included_row_number % total_rows
+        )
 
         # Increment and update the data version in the copy
         new_version = f"v{updated_cfg.data.version_number+1}.0"
@@ -67,7 +82,6 @@ def validate_initial_data(cfg: DictConfig, df: pd.DataFrame):
             project_root_dir=cfg.data.context_dir_path, mode="file"
         )
         ds: PandasDatasource = context.sources.add_or_update_pandas(name="sample_data")
-        print(df.head())
         ds.add_dataframe_asset(
             name="sample_file",
             dataframe=df,

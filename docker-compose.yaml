@@ -15,7 +15,12 @@ x-airflow-common:
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
+    AIRFLOW__WEBSERVER__SECRET_KEY: 'key'
     # AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
+    # Authentication for ZenML
+    ZENML_STORE_URL: http://zenml:8081
+    ZENML_STORE_USERNAME: admin
+    ZENML_STORE_PASSWORD: admin
 
   volumes:
     # Add all the necessary volumes for the Airflow service
@@ -32,6 +37,8 @@ x-airflow-common:
       condition: service_healthy
     postgres:
       condition: service_healthy
+    zenml:
+      condition: service_started
 
 services:
   postgres:
@@ -44,8 +51,9 @@ services:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
-      interval: 10s
-      retries: 5
+      interval: 5s
+      timeout: 30s
+      retries: 50
       start_period: 5s
     restart: always
 
@@ -57,10 +65,10 @@ services:
       - 6379
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
+      interval: 5s
       timeout: 30s
       retries: 50
-      start_period: 30s
+      start_period: 5s
     restart: always
 
   airflow-webserver:
@@ -231,5 +239,40 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
+  # MySQL database for ZenML
+  mysql:
+    image: mysql:8.4.1
+    volumes:
+      - mysql-db-volume:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 20s
+      retries: 10
+      start_period: 5s
+    restart: always
+
+  # ZenML server
+  zenml:
+    image: zenmldocker/zenml-server:0.58.2
+    command: --port 8081 --host 0.0.0.0
+    ports:
+      - "8081:8081"
+    environment:
+      ZENML_STORE_URL: mysql://root:password@mysql:3306/zenml
+      ZENML_DEFAULT_USER_NAME: admin
+      ZENML_DEFAULT_USER_PASSWORD: admin
+      ZENML_SERVER_AUTO_ACTIVATE: 1
+      ZENML_ANALYTICS_OPT_IN: false
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./:/opt/airflow/project
+    restart: always
+
 volumes:
   postgres-db-volume:
+  mysql-db-volume:

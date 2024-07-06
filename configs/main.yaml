@@ -6,6 +6,6 @@ data:
   sample_version_path: data/samples/sample.csv.dvc
   context_dir_path: ./services
   sample_size: 0.2
-  last_included_row_number: 0
-  data_version: ""
-  version_number: 0
+  last_included_row_number: 815663
+  data_version: v1.0
+  version_number: 1

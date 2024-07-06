@@ -6,12 +6,11 @@ import os
 import gdown
 import pandas as pd
 from omegaconf import DictConfig, OmegaConf
-import hydra
 import copy
-from src.data_quality import load_context_and_sample_data
+import great_expectations as gx
+from great_expectations.datasource.fluent import PandasDatasource
 
 
-@hydra.main(version_base=None, config_path="configs", config_name="main")
 def sample_data(cfg: DictConfig):
     """
     The function to sample the data from the given URL and save it to the sample path.
@@ -59,14 +58,19 @@ def sample_data(cfg: DictConfig):
         return None, cfg
 
 
-@hydra.main(version_base=None, config_path="configs", config_name="main")
-def validate_initial_data(cfg: DictConfig):
+def validate_initial_data(cfg: DictConfig, df: pd.DataFrame):
     """
     Validate the data using Great Expectations.
     """
     try:
-        context, da = load_context_and_sample_data(
-            cfg.data.context_dir_path, cfg.data.sample_path
+        context = gx.get_context(
+            project_root_dir=cfg.data.context_dir_path, mode="file"
+        )
+        ds: PandasDatasource = context.sources.add_or_update_pandas(name="sample_data")
+        print(df.head())
+        ds.add_dataframe_asset(
+            name="sample_file",
+            dataframe=df,
         )
         checkpoint = context.get_checkpoint("sample_checkpoint")
 
@@ -109,7 +113,7 @@ if __name__ == "__main__":
         raise ValueError("Data sampling failed. Exiting...")
 
     # Validate the data
-    if not validate_initial_data(cfg):
+    if not validate_initial_data(cfg, sample):
         raise ValueError("Data validation failed. Exiting...")
 
     # Save the generated sample of data and new configuration settings

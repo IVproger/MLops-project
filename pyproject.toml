@@ -26,6 +26,7 @@ flask-session = "0.5.0"
 pytzdata = "^2020.1"
 pendulum = "2.1.2"
 connexion = "2.14.2"
+pyarrow = "^16.1.0"
 
 [tool.poetry.group.dev]
 [tool.poetry.group.dev.dependencies]

@@ -65,7 +65,9 @@ def validate_initial_data(cfg: DictConfig):
     Validate the data using Great Expectations.
     """
     try:
-        context, da = load_context_and_sample_data("./services", cfg.data.sample_path)
+        context, da = load_context_and_sample_data(
+            cfg.data.context_dir_path, cfg.data.sample_path
+        )
         checkpoint = context.get_checkpoint("sample_checkpoint")
 
         checkpoint_result = checkpoint.run()

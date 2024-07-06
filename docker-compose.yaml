@@ -16,8 +16,6 @@ x-airflow-common:
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     # AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
-    # Add our sources to the PYTHONPATH
-    PYTHONPATH: "$PYTHONPATH:/opt/airflow/project"
 
   volumes:
     # Add all the necessary volumes for the Airflow service

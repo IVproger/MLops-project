@@ -20,6 +20,19 @@ Run
 $ bash scripts/test_data.sh
 ```
 
+## Start all services
+
+1. Install Docker (or Docker Desktop) with Docker Compose plugin.
+2. Run the following command:
+    ```bash
+    mkdir -p ./services/airflow/dags ./services/airflow/logs ./services/airflow/plugins ./services/airflow/config
+    echo -e "AIRFLOW_UID=$(id -u)" > .env
+    ```
+3. Start all services:
+    ```bash
+    docker compose up --build
+    ```
+
 ## How to Airflow
 
 ### Setup Poetry

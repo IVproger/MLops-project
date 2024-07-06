@@ -14,12 +14,12 @@ with DAG(
 
     extract_data = BashOperator(
         task_id="extract_data",
-        bash_command=f"cd {airflow_home} && cd ../../ && python3 -m src.data",
+        bash_command=f"cd {airflow_home} && cd project && python3 -m src.data",
     )
 
     load_to_datastore = BashOperator(
         task_id="load_to_datastore",
-        bash_command=f"cd {airflow_home} && cd ../../ && dvc add data/samples/sample.csv && dvc push",
+        bash_command=f"cd {airflow_home} && cd project && dvc add data/samples/sample.csv && dvc push",
     )
 
     extract_data >> load_to_datastore

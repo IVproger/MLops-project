@@ -59,6 +59,18 @@ def encode_cyclic_time_data(df: DataFrame, col: str, period: int) -> DataFrame:
     return df
 
 
+def fix_hhmm(df: DataFrame, col: str) -> tuple[DataFrame, str, str]:
+    # # Encoding hours and minutes
+    colHH = col + "HH"
+    colMM = col + "MM"
+    df[colHH] = df[col].apply(lambda hhmm: hhmm // 100)
+    df[colMM] = df[col].apply(lambda hhmm: hhmm % 100)
+
+    df.drop([col], axis=1, inplace=True)
+    return (df, colHH, colMM)
+
+
+@deprecated
 def fix_dtypes(df: DataFrame) -> DataFrame:
     """Fixes datatypes for numerical columns
 
@@ -83,6 +95,7 @@ def fix_dtypes(df: DataFrame) -> DataFrame:
     return df
 
 
+@deprecated
 def encode_op_airline(df: DataFrame) -> DataFrame:
     """Encode `Operating_Airline` with onehot encoding
 

@@ -35,6 +35,10 @@ hash_features:
   - "Airline"
   - "Origin"
   - "Dest"
+hhmm:
+  - "CRSArrTime"
+  - "CRSDepTime"
+  - "CRSElapsedTime"
 time_features:
   - - "Month"
     - 12

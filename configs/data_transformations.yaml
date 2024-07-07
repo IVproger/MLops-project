@@ -44,3 +44,5 @@ time_features:
     - 12
   - - "DayofMonth"
     - 31
+  - - "Quarter"
+    - 4

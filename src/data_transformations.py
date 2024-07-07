@@ -7,24 +7,8 @@ from pandas import DataFrame
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import FunctionTransformer
 
-required = [
-    "Year",
-    "Month",
-    "DayofMonth",
-    # "FlightDate",
-    "Cancelled",
-    "OriginAirportID",
-    "DepTime",
-    "DepDelay",
-    "DestAirportID",
-    "ArrTime",
-    "ArrDelay",
-    "AirTime",
-    "Distance",
-    "ActualElapsedTime",
-    "Operating_Airline",
-    "Tail_Number",
-]
+from hydra import compose, initialize
+from deprecation import deprecated
 
 
 def sin_transformer(period):
@@ -35,7 +19,7 @@ def cos_transformer(period):
     return FunctionTransformer(lambda x: np.cos(x / period * 2 * np.pi))
 
 
-def pull_features(df: DataFrame) -> DataFrame:
+def pull_features(df: DataFrame, required: list[str]) -> DataFrame:
     """
     Extract only the required features from the dataframe
     """
@@ -46,14 +30,12 @@ def pull_features(df: DataFrame) -> DataFrame:
                 f"Dataframe lacks one or more of the required columns: {c}"
             )
     pulled_df = df.copy()
-    remaining_cols = set(df.columns) - set(required)
+    columns_to_drop = set(df.columns) - set(required)
 
-    pulled_df.drop(list(remaining_cols), axis=1, inplace=True)
-
-    # Fix types on pulled_df
-    pulled_df["Tail_Number"] = pulled_df["Tail_Number"].astype("str")
+    pulled_df.drop(list(columns_to_drop), axis=1, inplace=True)
 
     return pulled_df
+
 
 
 def fix_dtypes(df: DataFrame) -> DataFrame:

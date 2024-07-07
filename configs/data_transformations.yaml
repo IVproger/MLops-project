@@ -35,3 +35,8 @@ hash_features:
   - "Airline"
   - "Origin"
   - "Dest"
+time_features:
+  - - "Month"
+    - 12
+  - - "DayofMonth"
+    - 31

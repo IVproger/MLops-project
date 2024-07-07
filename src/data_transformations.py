@@ -45,6 +45,20 @@ def hash_feature(df: DataFrame, col: str, num_buckets=1000):
     return df
 
 
+def encode_cyclic_time_data(df: DataFrame, col: str, period: int) -> DataFrame:
+    # Check that the column exists
+    if col not in df.columns:
+        raise ValueError(f"{col} is expected in the dataframe, but not found.")
+
+    # Encode data
+    df[col + "_sin"] = sin_transformer(period).fit_transform(df[col])
+    df[col + "_cos"] = cos_transformer(period).fit_transform(df[col])
+
+    df.drop([col], axis=1, inplace=True)
+
+    return df
+
+
 def fix_dtypes(df: DataFrame) -> DataFrame:
     """Fixes datatypes for numerical columns
 
@@ -89,65 +103,6 @@ def encode_op_airline(df: DataFrame) -> DataFrame:
         raise ValueError("Operating_Airline column's datatype is not str")
 
     df = pd.get_dummies(df, columns=["Operating_Airline"])
-    return df
-
-
-def hash_feature(df: DataFrame, col: str, num_buckets=1000):
-    # Hashing with buckets
-    df[col] = df[col].map(
-        lambda text: int(hashlib.md5(text.encode()).hexdigest(), 16) % num_buckets
-    )
-    return df
-
-
-def process_time_data(df: DataFrame) -> DataFrame:
-    """
-    Process time-related data
-
-    Args:
-        df (DataFrame): Source dataframe.
-
-    Returns:
-        DataFrame: Source dataframe with time-related data transformed.
-    """
-    # Check that the column exists
-
-    for c in ["DepTime", "Month", "DayofMonth"]:
-        if c not in df.columns:
-            raise ValueError(f"{c} is expected in the dataframe, but not found.")
-
-    # Encoding month data
-    df["Month_sin"] = sin_transformer(12).fit_transform(df["Month"])
-    df["Month_cos"] = cos_transformer(12).fit_transform(df["Month"])
-
-    # Encoding day data
-    df["DayofMonth_sin"] = sin_transformer(31).fit_transform(df["DayofMonth"])
-    df["DayofMonth_cos"] = cos_transformer(31).fit_transform(df["DayofMonth"])
-
-    # Encoding hours and minutes
-    df["DepTimeHH"] = df["DepTime"].apply(lambda hhmm: hhmm // 100)
-    df["DepTimeMM"] = df["DepTime"].apply(lambda hhmm: hhmm % 100)
-
-    df["DepTimeHH_sin"] = sin_transformer(24).fit_transform(df["DepTimeHH"])
-    df["DepTimeHH_cos"] = cos_transformer(24).fit_transform(df["DepTimeHH"])
-
-    df["DepTimeMM_sin"] = sin_transformer(60).fit_transform(df["DepTimeMM"])
-    df["DepTimeMM_cos"] = cos_transformer(60).fit_transform(df["DepTimeMM"])
-
-    # Drop old columns
-    df.drop(
-        [
-            "Month",
-            "DayofMonth",
-            "DepTime",
-            "DepTimeHH",
-            "DepTimeMM",
-            "Year",  # TROLLING
-        ],
-        axis=1,
-        inplace=True,
-    )
-
     return df
 
 

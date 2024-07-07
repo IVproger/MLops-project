@@ -7,14 +7,14 @@ import copy
 import math
 
 import gdown
-import numpy as np
 import pandas as pd
 import zenml
 from omegaconf import DictConfig, OmegaConf
+from hydra import initialize, compose
 import great_expectations as gx
 from great_expectations.datasource.fluent import PandasDatasource
 
-from src import data_transformations
+from src import data_transformations as dtf
 
 
 def sample_data(cfg: DictConfig):
@@ -120,20 +120,31 @@ def preprocess_data(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Preprocess the data to extract features and target.
     """
-    # TODO: Apply correct transformations
-    df = data_transformations.pull_features(df)
-    df = data_transformations.handle_missing_values(df)
-    df = data_transformations.handle_duplicates(df)
-    df = data_transformations.fix_dtypes(df)
-    df = data_transformations.encode_op_airline(df)
-    df = data_transformations.hash_tail_number(df)
-    df: pd.DataFrame = data_transformations.process_time_data(df)
-    df["On-time"] = np.where((df["DepDelay"] <= 0) & (~df["Cancelled"]), True, False)
-    df["Target"] = np.select([df["On-time"], df["Cancelled"]], [0, 1])
-    df = df.drop(["Cancelled", "On-time"], axis=1)
-    X = df.drop(["Target"], axis=1)
-    y = df[["Target"]]
-    return X, y
+    with initialize(version_base=None, config_path="configs"):
+        cfg = compose(config_name="data_transformations")
+
+        # 1. Drop unnecessary features
+        df = dtf.pull_features(df, cfg["required"])
+
+        # 2. Hash string features
+        for c in cfg["hash_features"]:
+            df = dtf.hash_feature(df, c)
+
+        # 3. Fix time values and encode them as cyclic features
+        for c in cfg["hhmm"]:
+            df, colHH, colMM = dtf.fix_hhmm(df, c)
+            df = dtf.encode_cyclic_time_data(df, colHH, 24)
+            df = dtf.encode_cyclic_time_data(df, colMM, 60)
+
+        # 4. Encode remaining cyclic features
+        for tf in cfg["time_features"]:
+            print(tf)
+            df = dtf.encode_cyclic_time_data(df, tf[0], tf[1])
+        
+        # 5. Split the dataset into X and y
+        X = df.drop(["Cancelled"], axis=1)
+        y = df["Cancelled"]
+        return X, y
 
 
 def validate_features(

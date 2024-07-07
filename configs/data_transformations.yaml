@@ -29,3 +29,9 @@ required:
   - "OriginStateFips"
   - "OriginWac"
   - "Quarter"
+hash_features:
+  - "ArrTimeBlk"
+  - "DepTimeBlk"
+  - "Airline"
+  - "Origin"
+  - "Dest"

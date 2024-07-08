@@ -19,8 +19,8 @@ x-airflow-common:
     # AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
     # Authentication for ZenML
     ZENML_STORE_URL: http://zenml:8081
-    ZENML_STORE_USERNAME: admin
-    ZENML_STORE_PASSWORD: admin
+    ZENML_STORE_USERNAME: ${ZENML_STORE_USERNAME:-admin}
+    ZENML_STORE_PASSWORD: ${ZENML_STORE_PASSWORD:-admin}
 
   volumes:
     # Add all the necessary volumes for the Airflow service

@@ -120,7 +120,7 @@ def preprocess_data(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Preprocess the data to extract features and target.
     """
-    with initialize(version_base=None, config_path="configs"):
+    with initialize(version_base=None, config_path="../configs"):
         cfg = compose(config_name="data_transformations")
 
         # 1. Drop unnecessary features
@@ -140,10 +140,10 @@ def preprocess_data(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
         for tf in cfg["time_features"]:
             print(tf)
             df = dtf.encode_cyclic_time_data(df, tf[0], tf[1])
-        
+
         # 5. Split the dataset into X and y
         X = df.drop(["Cancelled"], axis=1)
-        y = df["Cancelled"]
+        y = df[["Cancelled"]]
         return X, y
 
 

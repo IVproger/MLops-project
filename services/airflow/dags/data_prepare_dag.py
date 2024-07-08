@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from airflow.decorators import dag
 from airflow.operators.bash import BashOperator
@@ -21,8 +21,7 @@ def data_prepare():
     sensor = ExternalTaskSensor(
         task_id="external_task_sensor",
         external_dag_id="data_extraction_dag",
-        external_task_id=None,  # Wait for all tasks in the DAG to complete
-        execution_delta=timedelta(minutes=5),  # Only dags that are 5 minutes old
+        external_task_id="load_to_datastore",
         timeout=600,  # Timeout after 10 minutes
         check_existence=True,  # Do not wait if there is no such task
     )

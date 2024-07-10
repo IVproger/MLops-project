@@ -17,7 +17,7 @@ data_version_path = os.path.join(PROJECT_ROOT, "configs/data_version.txt")
     dag_id="data_extraction_v1_dag",
     description="A DAG for data extraction, validation, versioning, and loading",
     start_date=datetime(2024, 7, 1, tz="UTC"),
-    schedule_interval="*/5 * * * *",
+    schedule_interval="*/20 * * * *",
     catchup=False,
 )
 def data_extraction_workflow():
@@ -54,13 +54,13 @@ def data_extraction_workflow():
 
     version_the_sample = BashOperator(
         task_id="version_the_data_sample",
-        bash_command="dvc add data/samples/sample.csv && dvc commit -m 'Versioning sample data'",
+        bash_command="dvc add data/samples/sample.csv ",
         cwd=PROJECT_ROOT,
     )
 
     load_to_datastore = BashOperator(
         task_id="load_to_datastore",
-        bash_command="dvc push",
+        bash_command="dvc push ",
         cwd=PROJECT_ROOT,
     )
 

@@ -1,7 +1,7 @@
 data:
   url: https://drive.google.com/uc?id=1CKXjF6xZEgjYsdwfCMxoHChI7J5WjjdI
   output: datastore/data.csv
-  datastore_path: datastore/data.csv
+  datastore_path: project/datastore/data.csv
   sample_path: data/samples/sample.csv
   sample_version_path: data/samples/sample.csv.dvc
   context_dir_path: ./services

@@ -31,6 +31,7 @@ def sample_data(cfg: DictConfig):
             gdown.download(cfg.data.url, datastore_path, quiet=False, use_cookies=False)
 
         # Determine the total number of rows in the file without loading it entirely
+
         total_rows = sum(1 for row in open(datastore_path, "r")) - 1  # Exclude header
 
         # Calculate the sample size

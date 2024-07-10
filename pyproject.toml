@@ -21,7 +21,8 @@ seaborn = "^0.13.2"
 pylint = "^3.2.5"
 great-expectations = "^0.18.17"
 zenml = "0.58.2"
-pyarrow = "^16.1.0"
+pyarrow = "15.0.2"
+mlflow = "^2.14.2"
 
 [tool.poetry.group.dev]
 [tool.poetry.group.dev.dependencies]

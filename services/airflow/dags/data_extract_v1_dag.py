@@ -17,7 +17,7 @@ data_version_path = os.path.join(PROJECT_ROOT, "configs/data_version.txt")
     dag_id="data_extraction_v1_dag",
     description="A DAG for data extraction, validation, versioning, and loading",
     start_date=datetime(2024, 7, 1, tz="UTC"),
-    schedule_interval="*/20 * * * *",
+    schedule_interval="*/15 * * * *",
     catchup=False,
 )
 def data_extraction_workflow():
@@ -48,7 +48,6 @@ def data_extraction_workflow():
         else:
             raise AirflowFailException("Validation failed, failing the task.")
 
-    # Define tasks
     extract_data_task = extract_data()
     validate_data_task = validate_data(extract_data_task)
 
@@ -64,7 +63,6 @@ def data_extraction_workflow():
         cwd=PROJECT_ROOT,
     )
 
-    # Set task dependencies using chain
     chain(extract_data_task, validate_data_task, version_the_sample, load_to_datastore)
 
 

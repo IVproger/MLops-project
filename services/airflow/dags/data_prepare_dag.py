@@ -20,7 +20,7 @@ def data_prepare():
     # Wait for the data extraction workflow to complete
     sensor = ExternalTaskSensor(
         task_id="external_task_sensor",
-        external_dag_id="data_extraction_dag",
+        external_dag_id="data_extraction_v1_dag",
         external_task_id="load_to_datastore",
         timeout=600,  # Timeout after 10 minutes
         check_existence=True,  # Do not wait if there is no such task

@@ -13,7 +13,7 @@ data_version_path = os.path.join(PROJECT_ROOT, "configs/data_version.txt")
 
 
 @dag(
-    dag_id="data_extraction_workflow",
+    dag_id="data_extraction_v1_dag",
     description="A DAG for data extraction, validation, versioning, and loading",
     start_date=datetime(2024, 7, 1, tz="UTC"),
     schedule_interval="*/5 * * * *",

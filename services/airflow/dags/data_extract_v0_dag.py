@@ -9,7 +9,7 @@ PROJECT_ROOT = os.path.join(AIRFLOW_HOME, "project")
 
 
 @dag(
-    "data_extraction_dag",
+    "data_extraction_v0_dag",
     description="A DAG for extraction of a new sample, validation, versioning using DVC, and loading to DVC data store.",
     start_date=datetime(2024, 7, 1),
     schedule_interval="*/5 * * * *",  # Every 5 minutes

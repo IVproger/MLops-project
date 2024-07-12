@@ -65,6 +65,10 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    deploy:
+      resources:
+        limits:
+          memory: 1G
 
   airflow-scheduler:
     <<: *airflow-common
@@ -80,6 +84,10 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    deploy:
+      resources:
+        limits:
+          memory: 5.5G
 
   airflow-triggerer:
     <<: *airflow-common
@@ -95,6 +103,10 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    deploy:
+      resources:
+        limits:
+          memory: 1G
 
   airflow-init:
     <<: *airflow-common
@@ -158,6 +170,10 @@ services:
     user: "0:0"
     volumes:
       - ./services/airflow:/sources
+    deploy:
+      resources:
+        limits:
+          memory: 1G
 
   airflow-cli:
     <<: *airflow-common
@@ -171,6 +187,10 @@ services:
       - bash
       - -c
       - airflow
+    deploy:
+      resources:
+        limits:
+          memory: 1G
 
   # ZenML server
   zenml:
@@ -187,6 +207,10 @@ services:
     volumes:
       - ./:/project
     restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 1G
 
 volumes:
   postgres-db-volume:

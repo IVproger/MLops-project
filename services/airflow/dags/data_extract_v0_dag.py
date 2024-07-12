@@ -5,7 +5,8 @@ from airflow.decorators import dag
 from airflow.operators.bash import BashOperator
 
 AIRFLOW_HOME = os.environ.get("AIRFLOW_HOME")
-PROJECT_ROOT = os.path.join(AIRFLOW_HOME, "project")
+PROJECT_ROOT = os.path.join(AIRFLOW_HOME, "../..")
+VENV_PATH = os.environ.get("VENV_PATH")
 
 
 @dag(
@@ -19,8 +20,10 @@ def data_extract():
     # Extract data, validate it, and version it
     extract_data = BashOperator(
         task_id="extract_data",
-        bash_command="python3 -m src.data",
+        bash_command="echo $PATH && python3 -m src.data",
         cwd=PROJECT_ROOT,
+        env={"PATH": os.path.join(VENV_PATH, "bin")},
+        append_env=True,
     )
 
     # Load the data to the DVC data store
@@ -28,6 +31,8 @@ def data_extract():
         task_id="load_to_datastore",
         bash_command="dvc add data/samples/sample.csv && dvc push",
         cwd=PROJECT_ROOT,
+        env={"PATH": os.path.join(VENV_PATH, "bin")},
+        append_env=True,
     )
 
     # Define the task dependencies

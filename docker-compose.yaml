@@ -6,35 +6,27 @@ x-airflow-common:
     dockerfile: ./airflow.Dockerfile
   environment:
     &airflow-common-env
-    AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
-    AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     AIRFLOW__WEBSERVER__SECRET_KEY: 'key'
+    AIRFLOW_HOME: /project/services/airflow
+    PYTHONPATH: /project
     # AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
     # Authentication for ZenML
-    ZENML_STORE_URL: http://zenml:8081
-    ZENML_STORE_USERNAME: ${ZENML_STORE_USERNAME:-admin}
-    ZENML_STORE_PASSWORD: ${ZENML_STORE_PASSWORD:-admin}
-
+    ZENML_DEFAULT_USER_NAME: ${ZENML_STORE_USERNAME:-admin}
+    ZENML_DEFAULT_USER_PASSWORD: ${ZENML_STORE_PASSWORD:-admin}
+    ZENML_ANALYTICS_OPT_IN: false
+    ZENML_CONFIG_PATH: /project/services/zenml
   volumes:
-    # Add all the necessary volumes for the Airflow service
-    - ./services/airflow/dags:/opt/airflow/dags
-    - ./services/airflow/logs:/opt/airflow/logs
-    - ./services/airflow/config:/opt/airflow/config
-    - ./services/airflow/plugins:/opt/airflow/plugins
-    # Add our sources
-    - ./:/opt/airflow/project
+    - ./:/project
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
-    redis:
-      condition: service_healthy
     postgres:
       condition: service_healthy
     zenml:
@@ -51,20 +43,6 @@ services:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
-      interval: 5s
-      timeout: 30s
-      retries: 50
-      start_period: 5s
-    restart: always
-
-  redis:
-    # Redis is limited to 7.2-bookworm due to licencing change
-    # https://redis.io/blog/redis-adopts-dual-source-available-licensing/
-    image: redis:7.2-bookworm
-    expose:
-      - 6379
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 30s
       retries: 50
@@ -97,29 +75,6 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
-    restart: always
-    depends_on:
-      <<: *airflow-common-depends-on
-      airflow-init:
-        condition: service_completed_successfully
-
-  airflow-worker:
-    <<: *airflow-common
-    command: celery worker
-    healthcheck:
-      # yamllint disable rule:line-length
-      test:
-        - "CMD-SHELL"
-        - 'celery --app airflow.providers.celery.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}" || celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"'
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-    environment:
-      <<: *airflow-common-env
-      # Required to handle warm shutdown of the celery workers properly
-      # See https://airflow.apache.org/docs/docker-stack/entrypoint.html#signal-propagation
-      DUMB_INIT_SETSID: "0"
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
@@ -217,43 +172,6 @@ services:
       - -c
       - airflow
 
-  # You can enable flower by adding "--profile flower" option e.g. docker-compose --profile flower up
-  # or by explicitly targeted on the command line e.g. docker-compose up flower.
-  # See: https://docs.docker.com/compose/profiles/
-  flower:
-    <<: *airflow-common
-    command: celery flower
-    profiles:
-      - flower
-    ports:
-      - "5555:5555"
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:5555/"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-    restart: always
-    depends_on:
-      <<: *airflow-common-depends-on
-      airflow-init:
-        condition: service_completed_successfully
-
-  # MySQL database for ZenML
-  mysql:
-    image: mysql:8.4.1
-    volumes:
-      - mysql-db-volume:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      interval: 5s
-      timeout: 20s
-      retries: 10
-      start_period: 5s
-    restart: always
-
   # ZenML server
   zenml:
     image: zenmldocker/zenml-server:0.58.2
@@ -261,18 +179,14 @@ services:
     ports:
       - "8081:8081"
     environment:
-      ZENML_STORE_URL: mysql://root:password@mysql:3306/zenml
-      ZENML_DEFAULT_USER_NAME: admin
+      ZENML_DEFAULT_USER_NAME: ${ZENML_STORE_USERNAME:-admin}
       ZENML_DEFAULT_USER_PASSWORD: ${ZENML_STORE_PASSWORD:-admin}
       ZENML_SERVER_AUTO_ACTIVATE: 1
       ZENML_ANALYTICS_OPT_IN: false
-    depends_on:
-      mysql:
-        condition: service_healthy
+      ZENML_CONFIG_PATH: /project/services/zenml
     volumes:
-      - ./:/opt/airflow/project
+      - ./:/project
     restart: always
 
 volumes:
   postgres-db-volume:
-  mysql-db-volume:

@@ -6,7 +6,8 @@ from airflow.operators.bash import BashOperator
 from airflow.sensors.external_task import ExternalTaskSensor
 
 AIRFLOW_HOME = os.environ.get("AIRFLOW_HOME")
-PROJECT_ROOT = os.path.join(AIRFLOW_HOME, "project")
+PROJECT_ROOT = os.path.realpath(os.path.join(AIRFLOW_HOME, "../.."))
+VENV_PATH = os.environ.get("VENV_PATH")
 
 
 @dag(
@@ -20,7 +21,7 @@ def data_prepare():
     # Wait for the data extraction workflow to complete
     sensor = ExternalTaskSensor(
         task_id="external_task_sensor",
-        external_dag_id="data_extraction_v1_dag",
+        external_dag_id="data_extraction_v0_dag",
         external_task_id="load_to_datastore",
         timeout=600,  # Timeout after 10 minutes
         check_existence=True,  # Do not wait if there is no such task
@@ -29,8 +30,10 @@ def data_prepare():
     # Execute the ZenML pipeline to prepare the data
     zenml_pipeline = BashOperator(
         task_id="run_zenml_data_prepare_pipeline",
-        cwd=PROJECT_ROOT,
         bash_command="python3 ./pipelines/data_prepare.py -prepare_data_pipeline ",
+        cwd=PROJECT_ROOT,
+        env={"PATH": os.path.join(VENV_PATH, "bin")},
+        append_env=True,
     )
 
     # Run the ZenML pipeline after the data extraction workflow is successful

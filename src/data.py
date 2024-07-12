@@ -138,7 +138,6 @@ def preprocess_data(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
 
         # 4. Encode remaining cyclic features
         for tf in cfg["time_features"]:
-            print(tf)
             df = dtf.encode_cyclic_time_data(df, tf[0], tf[1])
 
         # 5. Split the dataset into X and y

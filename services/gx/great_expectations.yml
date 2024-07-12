@@ -101,6 +101,15 @@ fluent_datasources:
     type: pandas
     assets:
       sample_file:
+        type: csv
+        filepath_or_buffer: ../data/samples/sample.csv
+  transformed_sample:
+    type: pandas
+    assets:
+      X:
+        type: dataframe
+        batch_metadata: {}
+      y:
         type: dataframe
         batch_metadata: {}
 notebooks:

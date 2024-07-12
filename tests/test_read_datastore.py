@@ -11,7 +11,7 @@ from src.data import read_datastore
 def basic_cfg(tmp_path):
     d = tmp_path / "configs"
     d.mkdir()
-    main_cfg = d / "main.yaml"
+    main_cfg = d / "data_sample.yaml"
     main_cfg.write_text("""
 data:
   sample_path: "../sample_data.csv"
@@ -28,7 +28,7 @@ data:
 def test_successful_data_reading(
     mock_file_open, mock_read_csv, mock_load_cfg, basic_cfg
 ):
-    mock_load_cfg.return_value = OmegaConf.load(f"{basic_cfg}/main.yaml")
+    mock_load_cfg.return_value = OmegaConf.load(f"{basic_cfg}/data_sample.yaml")
     mock_read_csv.return_value = pd.DataFrame({"column1": [1, 2, 3]})
     data, version = read_datastore()
     assert isinstance(data, pd.DataFrame) and version == "v1.0"

@@ -110,7 +110,7 @@ def read_datastore() -> tuple[pd.DataFrame, str]:
     """
     Read the sample data.
     """
-    cfg = OmegaConf.load("configs/main.yaml")
+    cfg = OmegaConf.load("configs/data_sample.yaml")
     data = pd.read_csv(cfg.data.sample_path)
     version = open("configs/data_version.txt", "r").read().strip()
     return data, version
@@ -174,7 +174,7 @@ def fetch_features():
 
 
 if __name__ == "__main__":
-    cfg = OmegaConf.load("configs/main.yaml")
+    cfg = OmegaConf.load("configs/data_sample.yaml")
 
     # Take a new sample
     sample, new_cfg = sample_data(cfg)
@@ -188,6 +188,6 @@ if __name__ == "__main__":
 
     # Save the generated sample of data and new configuration settings
     sample.to_csv(cfg.data.sample_path, index=False)
-    OmegaConf.save(new_cfg, "configs/main.yaml")
+    OmegaConf.save(new_cfg, "configs/data_sample.yaml")
     with open("configs/data_version.txt", "w", encoding="utf-8") as file:
         file.write(new_cfg.data.data_version + "\n")

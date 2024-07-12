@@ -169,4 +169,3 @@ services/airflow/*
 !services/airflow/dags
 
 services/zenml/*
-!services/zenml/local_stores

@@ -206,6 +206,7 @@ services:
       ZENML_CONFIG_PATH: /project/services/zenml
     volumes:
       - ./:/project
+    user: "${AIRFLOW_UID:-50000}:0"
     restart: always
     deploy:
       resources:

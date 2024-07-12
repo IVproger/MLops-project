@@ -9,8 +9,6 @@ from airflow.models.baseoperator import chain
 AIRFLOW_HOME = os.environ.get("AIRFLOW_HOME")
 PROJECT_ROOT = os.path.join(AIRFLOW_HOME, "../..")
 VENV_PATH = os.environ.get("VENV_PATH")
-config_path = os.path.join(PROJECT_ROOT, "configs/airflow_setup.yaml")
-data_version_path = os.path.join(PROJECT_ROOT, "configs/data_version.txt")
 
 
 @dag(
@@ -23,8 +21,14 @@ data_version_path = os.path.join(PROJECT_ROOT, "configs/data_version.txt")
 def data_extraction_workflow():
     @task.external_python(python=os.path.join(VENV_PATH, "bin/python3"))
     def extract_data():
+        import os
         from omegaconf import OmegaConf
         from src.data import sample_data
+
+        PROJECT_ROOT = "/project"
+        config_path = os.path.join(PROJECT_ROOT, "configs/airflow_setup.yaml")
+
+        os.chdir(PROJECT_ROOT)
 
         cfg = OmegaConf.load(config_path)
         extracted_data, new_cfg = sample_data(cfg)
@@ -37,10 +41,17 @@ def data_extraction_workflow():
 
     @task.external_python(python=os.path.join(VENV_PATH, "bin/python3"))
     def validate_data(data):
+        import os
         from omegaconf import OmegaConf
         from src.data import validate_initial_data
 
+        PROJECT_ROOT = "/project"
+        config_path = os.path.join(PROJECT_ROOT, "configs/airflow_setup.yaml")
         extracted_data = data["extracted_data"]
+        data_version_path = os.path.join(PROJECT_ROOT, "configs/data_version.txt")
+
+        os.chdir(PROJECT_ROOT)
+
         cfg = OmegaConf.create(data["cfg"])
         if validate_initial_data(cfg, extracted_data):
             OmegaConf.save(cfg, config_path)

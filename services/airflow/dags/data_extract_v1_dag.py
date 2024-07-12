@@ -15,7 +15,7 @@ VENV_PATH = os.environ.get("VENV_PATH")
     dag_id="data_extraction_v1_dag",
     description="A DAG for data extraction, validation, versioning, and loading",
     start_date=datetime(2024, 7, 1, tz="UTC"),
-    schedule_interval="*/15 * * * *",
+    schedule_interval="*/5 * * * *",
     catchup=False,
 )
 def data_extraction_workflow():

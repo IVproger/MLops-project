@@ -5,7 +5,6 @@ Import the necessary libraries and modules for the data sampling script.
 import os
 import copy
 import math
-
 import gdown
 import pandas as pd
 import zenml
@@ -13,7 +12,7 @@ from omegaconf import DictConfig, OmegaConf
 from hydra import initialize, compose
 import great_expectations as gx
 from great_expectations.datasource.fluent import PandasDatasource
-
+from zenml.client import Client
 from src import data_transformations as dtf
 
 
@@ -163,6 +162,15 @@ def load_features(X: pd.DataFrame, y: pd.DataFrame, version: str) -> None:
     Save the features and target as artifact.
     """
     zenml.save_artifact(data=[X, y], name="features_target", tags=[version])
+
+
+def fetch_features():
+    """
+    Fetch the features and target from the artifact store.
+    """
+    features_target = Client().get_artifact_version(name_id_or_prefix="features_target")
+    X, y = features_target.data
+    return X, y
 
 
 if __name__ == "__main__":

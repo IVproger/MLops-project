@@ -150,9 +150,23 @@ def validate_features(
     X: pd.DataFrame, y: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Validate the features and target using Great Expectations.
+    Validate the data using Great Expectations.
     """
-    # TODO: Implement feature validation
+    context = gx.get_context(project_root_dir=cfg.data.context_dir_path, mode="file")
+    ds: PandasDatasource = context.add_or_update_datasource(name="transformed_sample")
+    ds.add_dataframe_asset(name="X", dataframe=X)
+    ds.add_dataframe_asset(name="y", dataframe=y)
+
+    checkpoint = context.get_checkpoint("transformations_checkpoint")
+
+    checkpoint_result = checkpoint.run()
+
+    if checkpoint_result.success:
+        print("Validation successful.")
+    else:
+        print("Validation failed.")
+        print(checkpoint_result)
+
     return X, y
 
 

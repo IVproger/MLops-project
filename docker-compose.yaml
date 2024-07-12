@@ -68,7 +68,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
+          memory: 1.5G
 
   airflow-scheduler:
     <<: *airflow-common
@@ -87,7 +87,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 5.5G
+          memory: 4.5G
 
   airflow-triggerer:
     <<: *airflow-common

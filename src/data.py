@@ -175,7 +175,10 @@ def load_features(X: pd.DataFrame, y: pd.DataFrame, version: str) -> None:
     """
     Save the features and target as artifact.
     """
-    zenml.save_artifact(data=[X, y], name="features_target", tags=[version])
+    print(X)
+    print(y)
+    artifact = zenml.save_artifact(data=[X, y], name="features_target", tags=[version])
+    print(artifact)
 
 
 def fetch_features():

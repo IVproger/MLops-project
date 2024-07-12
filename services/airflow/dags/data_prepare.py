@@ -20,6 +20,7 @@ def extract() -> (
     Extract the sample data from the data store, and its version.
     """
     df, version = read_datastore()
+    print("Extracted from datastore", version)
     return df, version
 
 
@@ -71,6 +72,7 @@ def load(
     Save the features and target as artifact to ZenML.
     """
     load_features(X, y, version)
+    print("Loaded into features store", version)
     return X, y
 
 

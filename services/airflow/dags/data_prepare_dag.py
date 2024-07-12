@@ -4,6 +4,7 @@ from datetime import datetime
 from airflow.decorators import dag
 from airflow.operators.bash import BashOperator
 from airflow.sensors.external_task import ExternalTaskSensor
+from airflow.models.baseoperator import chain
 
 AIRFLOW_HOME = os.environ.get("AIRFLOW_HOME")
 PROJECT_ROOT = os.path.realpath(os.path.join(AIRFLOW_HOME, "../.."))
@@ -37,7 +38,7 @@ def data_prepare():
     )
 
     # Run the ZenML pipeline after the data extraction workflow is successful
-    sensor >> zenml_pipeline
+    chain(sensor, zenml_pipeline)
 
 
 # Initialize the DAG

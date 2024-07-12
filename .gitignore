@@ -164,8 +164,9 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# Ignore zenml data and configs
+services/zenml/*
+
 # Ignore airflow configs (these are machine-sensitive)
 services/airflow/*
 !services/airflow/dags
-
-services/zenml/*

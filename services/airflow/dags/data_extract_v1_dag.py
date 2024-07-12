@@ -26,7 +26,7 @@ def data_extraction_workflow():
         from src.data import sample_data
 
         PROJECT_ROOT = "/project"
-        config_path = os.path.join(PROJECT_ROOT, "configs/airflow_setup.yaml")
+        config_path = os.path.join(PROJECT_ROOT, "configs/main.yaml")
 
         os.chdir(PROJECT_ROOT)
 
@@ -46,7 +46,7 @@ def data_extraction_workflow():
         from src.data import validate_initial_data
 
         PROJECT_ROOT = "/project"
-        config_path = os.path.join(PROJECT_ROOT, "configs/airflow_setup.yaml")
+        config_path = os.path.join(PROJECT_ROOT, "configs/main.yaml")
         extracted_data = data["extracted_data"]
         data_version_path = os.path.join(PROJECT_ROOT, "configs/data_version.txt")
 

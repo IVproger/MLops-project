@@ -1,0 +1,7 @@
+name: Predicting flights cancellation
+
+entry_points:
+  main:
+    command: "python3 -m src.main --multirun"
+  evaluate:
+    command: "python3 -m src.evaluate"

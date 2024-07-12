@@ -1,0 +1,13 @@
+defaults:
+  - _self_
+  - data_sample
+  - model/model
+  - experiment
+
+hydra:
+  mode: MULTIRUN
+  # launcher:
+  #   n_jobs: -1
+  sweeper:
+    params:
+      +model: "rf"

@@ -170,3 +170,6 @@ services/zenml/*
 # Ignore airflow configs (these are machine-sensitive)
 services/airflow/*
 !services/airflow/dags
+
+# Ignore MLFlow temp files
+/multirun

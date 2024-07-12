@@ -152,6 +152,7 @@ def validate_features(
     """
     Validate the data using Great Expectations.
     """
+    cfg = OmegaConf.load("configs/data_sample.yaml")
     context = gx.get_context(project_root_dir=cfg.data.context_dir_path, mode="file")
     ds: PandasDatasource = context.add_or_update_datasource(name="transformed_sample")
     ds.add_dataframe_asset(name="X", dataframe=X)

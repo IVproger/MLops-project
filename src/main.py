@@ -7,7 +7,7 @@ def run(cfg: DictConfig):
     train_data_version = cfg.train_data_version
 
     print("Fetching features...")
-    X_train, X_test, y_train, y_test = fetch_features(
+    X_train, y_train = fetch_features(
         name="features_target",
         version=train_data_version,
         cfg=cfg,
@@ -18,6 +18,13 @@ def run(cfg: DictConfig):
         X_train,
         y_train,
         cfg,
+    )
+
+    test_data_version = cfg.test_data_version
+    X_test, y_test = fetch_features(
+        name="features_target",
+        version=test_data_version,
+        cfg=cfg,
     )
 
     print("Logging metadata...")

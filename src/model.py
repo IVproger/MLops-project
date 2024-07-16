@@ -1,16 +1,11 @@
-import warnings
-
-warnings.filterwarnings("ignore")
-from omegaconf import DictConfig
-from sklearn.model_selection import GridSearchCV, train_test_split  # noqa: E402
-from zenml.client import Client  # noqa: E402
 import pandas as pd
-from pandas import DataFrame # noqa: E402
 import mlflow  # noqa: E402
 import mlflow.sklearn  # noqa: E402
 import importlib  # noqa: E402
-import dvc.api
-from src.data import preprocess_data
+from omegaconf import DictConfig
+from sklearn.model_selection import GridSearchCV  # noqa: E402
+from pandas import DataFrame  # noqa: E402
+from src.data import preprocess_data, extract_data  # noqa: E402
 
 
 mlflow.set_tracking_uri(uri="http://127.0.0.1:5000")
@@ -22,17 +17,9 @@ def fetch_features(name: str, version: str, cfg: DictConfig):
     # lst = client.list_artifact_versions(name=name, tag=version, sort_by="version").items
     # lst.reverse()
 
-    with dvc.api.open("data/samples/sample.csv", rev="v1.0") as fd:
-        X, y = preprocess_data(cfg, pd.read_csv(fd))
-        X_train, X_test, y_train, y_test = train_test_split(
-            X,
-            y,
-            test_size=cfg.test_size,
-            random_state=cfg.random_state,
-            stratify=y,
-            shuffle=True,
-        )
-        return X_train, X_test, y_train, y_test
+    df, _ = extract_data(version, cfg)
+    X, y = preprocess_data(cfg, df)
+    return X, y
 
 
 def train(
@@ -41,7 +28,7 @@ def train(
     cfg: DictConfig,
 ):
     # Define the model hyperparameters
-    params = cfg.model.params
+    params = cfg.model.hydra.sweeper.params
 
     # Train the model
     module_name = cfg.model.module_name
@@ -76,6 +63,7 @@ def train(
     # Define evaluation metric
     evaluation_metric = cfg.model.evaluation_metric
 
+    # Instantiate GridSearch
     gs = GridSearchCV(
         estimator=estimator,
         param_grid=param_grid,
@@ -87,7 +75,8 @@ def train(
         return_train_score=True,
     )
 
-    gs.fit(X_train, y_train)
+    # Fit GridSearch
+    gs.fit(X_train, y_train.values.ravel())
 
     return gs
 
@@ -171,6 +160,7 @@ def log_metadata(
 
         # Log the performance metrics
         mlflow.log_metrics(best_metrics_dict)
+        print("DEBUG:", best_metrics_dict)
 
         # Set a tag that we can use to remind ourselves what this run was for
         mlflow.set_tag(cfg.model.tag_key, cfg.model.tag_value)
@@ -200,7 +190,9 @@ def log_metadata(
         for index, result in cv_results.iterrows():
             child_run_name = "_".join(["child", run_name, str(index)])
             with mlflow.start_run(
-                run_name=child_run_name, experiment_id=experiment_id, nested=True
+                run_name=child_run_name,
+                experiment_id=experiment_id,
+                nested=True,
             ):
                 ps = result.filter(regex="param_").to_dict()
                 ms = result.filter(regex="mean_").to_dict()
@@ -224,15 +216,6 @@ def log_metadata(
 
                 estimator = class_instance(**ps)
                 estimator.fit(X_train, y_train)
-
-                # from sklearn.model_selection import cross_val_score
-                # scores = cross_val_score(estimator=estimator,
-                #                          X_train,
-                #                          y_train,
-                #                          cv = cfg.model.folds,
-                #                          n_jobs=cfg.cv_n_jobs,
-                #                          scoring=cfg.model.cv_evaluation_metric)
-                # cv_evaluation_metric = scores.mean()
 
                 signature = mlflow.models.infer_signature(
                     X_train, estimator.predict(X_train)
@@ -266,28 +249,28 @@ def log_metadata(
 
                 print(f"metrics:\n{results.metrics}")
 
-            # mlflow.end_run()
+                mlflow.end_run()
 
-    # mlflow.end_run()
-
-
-# def retrieve_model_with_alias(
-#     model_name, model_alias="champion"
-# ) -> mlflow.pyfunc.PyFuncModel:
-#     best_model: mlflow.pyfunc.PyFuncModel = mlflow.pyfunc.load_model(
-#         model_uri=f"models:/{model_name}@{model_alias}"
-#     )
-
-#     # best_model
-#     return best_model
+        mlflow.end_run()
 
 
-# def retrieve_model_with_version(
-#     model_name, model_version="v1"
-# ) -> mlflow.pyfunc.PyFuncModel:
-#     best_model: mlflow.pyfunc.PyFuncModel = mlflow.pyfunc.load_model(
-#         model_uri=f"models:/{model_name}/{model_version}"
-#     )
+def retrieve_model_with_alias(
+    model_name, model_alias="champion"
+) -> mlflow.pyfunc.PyFuncModel:
+    best_model: mlflow.pyfunc.PyFuncModel = mlflow.pyfunc.load_model(
+        model_uri=f"models:/{model_name}@{model_alias}"
+    )
 
-#     # best_model
-#     return best_model
+    # best_model
+    return best_model
+
+
+def retrieve_model_with_version(
+    model_name, model_version="v1"
+) -> mlflow.pyfunc.PyFuncModel:
+    best_model: mlflow.pyfunc.PyFuncModel = mlflow.pyfunc.load_model(
+        model_uri=f"models:/{model_name}/{model_version}"
+    )
+
+    # best_model
+    return best_model

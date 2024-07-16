@@ -143,6 +143,8 @@ def preprocess_data(
     for tf in cfg["time_features"]:
         df = dtf.encode_cyclic_time_data(df, tf[0], tf[1])
 
+    df = df.sample(n=10_000)
+
     # 5. Split the dataset into X and y
     X = df.drop(["Cancelled"], axis=1)
     y = df[["Cancelled"]]
@@ -185,7 +187,7 @@ def load_features(X: pd.DataFrame, y: pd.DataFrame, version: str) -> None:
 
 def extract_data(version: str, cfg: DictConfig):
     with dvc.api.open(cfg.data.sample_path, rev=version) as fd:
-        return pd.read_csv(fd), version
+        return pd.read_csv(fd).sample(10_000), version
 
 
 if __name__ == "__main__":

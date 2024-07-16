@@ -84,7 +84,21 @@ def data_extraction_workflow():
         append_env=True,
     )
 
-    chain(extract_data_task, validate_data_task, version_the_sample, load_to_datastore)
+    push_to_git = BashOperator(
+        task_id="pust_to_git",
+        bash_command="bash scripts/push_sample_version.sh ",
+        cwd=PROJECT_ROOT,
+        env={"PATH": os.path.join(VENV_PATH, "bin")},
+        append_env=True,
+    )
+
+    chain(
+        extract_data_task,
+        validate_data_task,
+        version_the_sample,
+        load_to_datastore,
+        push_to_git,
+    )
 
 
 data_extraction_workflow = data_extraction_workflow()

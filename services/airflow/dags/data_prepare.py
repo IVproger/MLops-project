@@ -39,13 +39,13 @@ def transform(
     Transform the input data to extract features and target.
     """
     from hydra import initialize, compose
-    
-    with initialize(version_base=None, config_path="../configs"):
+
+    with initialize(version_base=None, config_path="../../../configs"):
         cfg = compose(config_name="data_transformations")
 
         X, y = preprocess_data(cfg, df)
         return X, y
-    
+
 
 @step(enable_cache=False)
 def validate(

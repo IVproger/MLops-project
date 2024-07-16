@@ -38,7 +38,9 @@ RUN poetry install --only main
 FROM apache/airflow:2.9.2-python3.11
 
 # Install git
+USER root
 RUN apt-get update && apt-get install --no-install-recommends -y git && rm -rf /var/lib/apt/lists/*
+USER airflow
 
 ENV VENV_PATH="/opt/pysetup/.venv"
 COPY --from=builder $VENV_PATH $VENV_PATH

@@ -1,6 +1,9 @@
 name: Code testing
 
-on: [ push, pull_request ]
+on:
+  push:
+    paths: [src, scripts, services/airflow/dags, tests, configs, .github]
+  pull_request:
 
 jobs:
   pre-commit:

@@ -14,21 +14,22 @@ from src.data import preprocess_data
 
 
 # TODO Rewrite to use ZenML
-def fetch_features(name: str, version: str, cfg: DictConfig, test=False):
+def fetch_features(name: str, version: str, cfg: DictConfig):
     # client = Client()
     # lst = client.list_artifact_versions(name=name, tag=version, sort_by="version").items
     # lst.reverse()
 
-    
-    # if not test:
-    #     with dvc.api.open("data/samples/sample.csv", rev="v1.0") as fd:
-    #         return preprocess_data(cfg, pd.read_csv(fd))
-    # else:
-    #     with dvc.api.open("data/samples/sample.csv", rev="v2.0") as fd:
-    #         return preprocess_data(cfg, pd.read_csv(fd))
-        
-    return preprocess_data(cfg, pd.read_csv('data/samples/sample.csv'))        
-    
+    with dvc.api.open("data/samples/sample.csv", rev="v1.0") as fd:
+        X, y = preprocess_data(cfg, pd.read_csv(fd))
+        X_train, X_test, y_train, y_test = train_test_split(
+            X,
+            y,
+            test_size=cfg.test_size,
+            random_state=cfg.random_state,
+            stratify=y,
+            shuffle=True,
+        )
+        return X_train, X_test, y_train, y_test
 
 
 def log_metadata(cfg, gs, X_train, y_train, X_test, y_test):

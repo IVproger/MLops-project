@@ -1,13 +1,13 @@
 import hydra
 from omegaconf import DictConfig, OmegaConf
-from src.model import fetch_features, log_metadata, train
+from src.model import fetch_features, fetch_validation_features, log_metadata, train
 
 
 def run(cfg: DictConfig):
     train_data_version = cfg.train_data_version
 
     print("Fetching features...")
-    X_train, y_train = fetch_features(
+    X_train, X_test, y_train, y_test = fetch_features(
         name="features_target",
         version=train_data_version,
         cfg=cfg,
@@ -20,10 +20,8 @@ def run(cfg: DictConfig):
         cfg,
     )
 
-    # test_data_version = cfg.test_data_version
-
-    print("Fetching testing features...")
-    X_test, y_test = fetch_features(
+    print("Fetching validation features...")
+    X_validation, y_validation = fetch_validation_features(
         name="features_target",
         version=train_data_version,
         cfg=cfg,
@@ -41,10 +39,8 @@ def run(cfg: DictConfig):
     )
 
 
-
 @hydra.main(config_path="../configs", config_name="main", version_base=None)  # type: ignore
 def main(cfg=None):
-    # print(OmegaConf.to_yaml(cfg))
     run(cfg)
 
 

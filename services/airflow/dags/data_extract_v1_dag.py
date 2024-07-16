@@ -15,7 +15,7 @@ VENV_PATH = os.environ.get("VENV_PATH")
     dag_id="data_extraction_v1_dag",
     description="A DAG for data extraction, validation, versioning, and loading",
     start_date=datetime(2024, 7, 1, tz="UTC"),
-    schedule_interval="*/5 * * * *",
+    schedule_interval="*/15 * * * *",
     catchup=False,
 )
 def data_extraction_workflow():
@@ -86,7 +86,7 @@ def data_extraction_workflow():
 
     push_to_git = BashOperator(
         task_id="pust_to_git",
-        bash_command="bash scripts/push_sample_version.sh ",
+        bash_command="sh scripts/push_sample_version.sh ",
         cwd=PROJECT_ROOT,
         env={"PATH": os.path.join(VENV_PATH, "bin")},
         append_env=True,

@@ -13,6 +13,7 @@ from hydra import initialize, compose
 import great_expectations as gx
 from great_expectations.datasource.fluent import PandasDatasource
 from src import data_transformations as dtf
+import dvc.api
 
 
 def sample_data(cfg: DictConfig):
@@ -176,10 +177,12 @@ def load_features(X: pd.DataFrame, y: pd.DataFrame, version: str) -> None:
     """
     Save the features and target as artifact.
     """
-    print(X)
-    print(y)
-    artifact = zenml.save_artifact(data=[X, y], name="features_target", tags=[version])
-    print(artifact)
+    zenml.save_artifact(data=[X, y], name="features_target", tags=[version])
+
+
+def extract_data(version: str, cfg: DictConfig):
+    with dvc.api.open(cfg.data.sample_path, rev=version) as fd:
+        return pd.read_csv(fd), version
 
 
 if __name__ == "__main__":

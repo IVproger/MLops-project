@@ -1,4 +1,6 @@
 data:
+  dataset_name: "Combined_Flights_2022"
+  target_cols: ["Cancelled"]
   url: https://drive.google.com/uc?id=1CKXjF6xZEgjYsdwfCMxoHChI7J5WjjdI
   output: datastore/data.csv
   datastore_path: datastore/data.csv

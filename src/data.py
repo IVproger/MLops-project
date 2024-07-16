@@ -2,6 +2,7 @@
 Import the necessary libraries and modules for the data sampling script.
 """
 
+import os
 import copy
 from pathlib import Path
 import math
@@ -27,7 +28,7 @@ def sample_data(cfg: DictConfig):
         Path(datastore_path).parent.mkdir(exist_ok=True, parents=True)
 
         # Check if the source data is available, if not download it.
-        if not Path(datastore_path).exists():
+        if not os.path.exists(datastore_path):
             print("Downloading data from: ", cfg.data.url)
             gdown.download(cfg.data.url, datastore_path, quiet=False, use_cookies=False)
 

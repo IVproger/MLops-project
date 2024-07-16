@@ -87,14 +87,6 @@ def data_extraction_workflow():
 
     push_to_git = BashOperator(
         task_id="pust_to_git",
-        bash_command="sh scripts/push_sample_version.sh ",
-        cwd=PROJECT_ROOT,
-        env={"PATH": os.path.join(VENV_PATH, "bin")},
-        append_env=True,
-    )
-
-    push_to_git = BashOperator(
-        task_id="pust_to_git",
         bash_command="scripts/push_sample_version.sh ",
         cwd=PROJECT_ROOT,
         env={"PATH": os.path.join(VENV_PATH, "bin") + ":" + PATH},

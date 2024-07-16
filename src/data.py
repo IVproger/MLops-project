@@ -2,14 +2,13 @@
 Import the necessary libraries and modules for the data sampling script.
 """
 
-import os
 import copy
+from pathlib import Path
 import math
 import gdown
 import pandas as pd
 import zenml
 from omegaconf import DictConfig, OmegaConf
-from hydra import initialize, compose
 import great_expectations as gx
 from great_expectations.datasource.fluent import PandasDatasource
 from src import data_transformations as dtf
@@ -24,8 +23,11 @@ def sample_data(cfg: DictConfig):
     try:
         datastore_path = cfg.data.datastore_path
 
+        # Create datastore directory if not exists
+        Path(datastore_path).parent.mkdir(exist_ok=True, parents=True)
+
         # Check if the source data is available, if not download it.
-        if not os.path.exists(datastore_path):
+        if not Path(datastore_path).exists():
             print("Downloading data from: ", cfg.data.url)
             gdown.download(cfg.data.url, datastore_path, quiet=False, use_cookies=False)
 

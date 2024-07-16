@@ -116,34 +116,34 @@ def read_datastore() -> tuple[pd.DataFrame, str]:
     return data, version
 
 
-def preprocess_data(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+def preprocess_data(
+    cfg: DictConfig, df: pd.DataFrame
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Preprocess the data to extract features and target.
     """
-    with initialize(version_base=None, config_path="../configs"):
-        cfg = compose(config_name="data_transformations")
 
-        # 1. Drop unnecessary features
-        df = dtf.pull_features(df, cfg["required"])
+    # 1. Drop unnecessary features
+    df = dtf.pull_features(df, cfg["required"])
 
-        # 2. Hash string features
-        for c in cfg["hash_features"]:
-            df = dtf.hash_feature(df, c)
+    # 2. Hash string features
+    for c in cfg["hash_features"]:
+        df = dtf.hash_feature(df, c)
 
-        # 3. Fix time values and encode them as cyclic features
-        for c in cfg["hhmm"]:
-            df, colHH, colMM = dtf.fix_hhmm(df, c)
-            df = dtf.encode_cyclic_time_data(df, colHH, 24)
-            df = dtf.encode_cyclic_time_data(df, colMM, 60)
+    # 3. Fix time values and encode them as cyclic features
+    for c in cfg["hhmm"]:
+        df, colHH, colMM = dtf.fix_hhmm(df, c)
+        df = dtf.encode_cyclic_time_data(df, colHH, 24)
+        df = dtf.encode_cyclic_time_data(df, colMM, 60)
 
-        # 4. Encode remaining cyclic features
-        for tf in cfg["time_features"]:
-            df = dtf.encode_cyclic_time_data(df, tf[0], tf[1])
+    # 4. Encode remaining cyclic features
+    for tf in cfg["time_features"]:
+        df = dtf.encode_cyclic_time_data(df, tf[0], tf[1])
 
-        # 5. Split the dataset into X and y
-        X = df.drop(["Cancelled"], axis=1)
-        y = df[["Cancelled"]]
-        return X, y
+    # 5. Split the dataset into X and y
+    X = df.drop(["Cancelled"], axis=1)
+    y = df[["Cancelled"]]
+    return X, y
 
 
 def validate_features(

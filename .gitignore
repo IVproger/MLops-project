@@ -173,3 +173,5 @@ services/airflow/*
 
 # Ignore MLFlow temp files
 /multirun
+/mlruns
+/mlartifacts

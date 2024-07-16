@@ -1,0 +1,12 @@
+model_name: logistic_regression
+artifact_path: basic_lr
+
+tag_key: "model"
+tag_value: "basic LR"
+
+module_name: "sklearn.linear_model"
+class_name: "LogisticRegression"
+
+params:
+  solver: ["saga"]
+  C: [0.1]

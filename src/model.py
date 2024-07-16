@@ -1,30 +1,114 @@
 import warnings
 
 warnings.filterwarnings("ignore")
-from sklearn.model_selection import GridSearchCV  # noqa: E402
+from omegaconf import DictConfig
+from sklearn.model_selection import GridSearchCV, train_test_split  # noqa: E402
 from zenml.client import Client  # noqa: E402
-import pandas as pd  # noqa: E402
+import pandas as pd
+from pandas import DataFrame # noqa: E402
 import mlflow  # noqa: E402
 import mlflow.sklearn  # noqa: E402
 import importlib  # noqa: E402
+import dvc.api
+from src.data import preprocess_data
 
 
-def fetch_features(name, version):
-    client = Client()
-    lst = client.list_artifact_versions(name=name, tag=version, sort_by="version").items
-    lst.reverse
-
-    X, y = lst[0].load()
-
-    return X, y
+mlflow.set_tracking_uri(uri="http://127.0.0.1:5000")
 
 
-def log_metadata(cfg, gs, X_train, y_train, X_test, y_test):
+# TODO Rewrite to use ZenML
+def fetch_features(name: str, version: str, cfg: DictConfig):
+    # client = Client()
+    # lst = client.list_artifact_versions(name=name, tag=version, sort_by="version").items
+    # lst.reverse()
+
+    with dvc.api.open("data/samples/sample.csv", rev="v1.0") as fd:
+        X, y = preprocess_data(cfg, pd.read_csv(fd))
+        X_train, X_test, y_train, y_test = train_test_split(
+            X,
+            y,
+            test_size=cfg.test_size,
+            random_state=cfg.random_state,
+            stratify=y,
+            shuffle=True,
+        )
+        return X_train, X_test, y_train, y_test
+
+
+def train(
+    X_train: DataFrame,
+    y_train: DataFrame,
+    cfg: DictConfig,
+):
+    # Define the model hyperparameters
+    params = cfg.model.params
+
+    # Train the model
+    module_name = cfg.model.module_name
+    class_name = cfg.model.class_name
+
+    print(params, module_name, class_name)
+
+    # We will create the estimator at runtime
+    import importlib
+
+    # Load "module.submodule.MyClass"
+    class_instance = getattr(importlib.import_module(module_name), class_name)
+
+    estimator = class_instance(**params)
+
+    # Grid search with cross validation
+    from sklearn.model_selection import StratifiedKFold
+
+    # Define cross validation
+    cv = StratifiedKFold(
+        n_splits=cfg.model.folds,
+        random_state=cfg.random_state,
+        shuffle=True,
+    )
+
+    # Define param grid
+    param_grid = dict(params)
+
+    # Define metrics for scoring
+    scoring = list(cfg.model.metrics.values())
+
+    # Define evaluation metric
+    evaluation_metric = cfg.model.evaluation_metric
+
+    gs = GridSearchCV(
+        estimator=estimator,
+        param_grid=param_grid,
+        scoring=scoring,
+        n_jobs=cfg.cv_n_jobs,
+        refit=evaluation_metric,
+        cv=cv,
+        verbose=1,
+        return_train_score=True,
+    )
+
+    gs.fit(X_train, y_train)
+
+    return gs
+
+
+def log_metadata(
+    cfg: DictConfig,
+    gs: GridSearchCV,
+    X_train: DataFrame,
+    y_train: DataFrame,
+    X_test: DataFrame,
+    y_test: DataFrame,
+):
+    # Filter cv_results
     cv_results = (
         pd.DataFrame(gs.cv_results_)
         .filter(regex=r"std_|mean_|param_")
         .sort_index(axis=1)
     )
+    print(cv_results, cv_results.columns)
+
+    # Get best params
     best_metrics_values = [
         result[1][gs.best_index_] for result in gs.cv_results_.items()
     ]
@@ -35,13 +119,13 @@ def log_metadata(cfg, gs, X_train, y_train, X_test, y_test):
         if "mean" in k or "std" in k
     }
 
-    # print(cv_results, cv_results.columns)
-
     params = best_metrics_dict
 
+    # Join back train and test datasets (for logging)
     df_train = pd.concat([X_train, y_train], axis=1)
     df_test = pd.concat([X_test, y_test], axis=1)
 
+    # Define experiment
     experiment_name = cfg.model.model_name + "_" + cfg.experiment_name
 
     try:
@@ -62,24 +146,23 @@ def log_metadata(cfg, gs, X_train, y_train, X_test, y_test):
             cfg.model.evaluation_metric,
             str(params[cv_evaluation_metric]).replace(".", "_"),
         ]
-    )  # type: ignore
+    )
     print("run name: ", run_name)
 
+    # Stop any existing runs
     if mlflow.active_run():
         mlflow.end_run()
-
-    # Fake run
-    with mlflow.start_run():
-        pass
 
     # Parent run
     with mlflow.start_run(run_name=run_name, experiment_id=experiment_id):
         df_train_dataset = mlflow.data.pandas_dataset.from_pandas(
-            df=df_train, targets=cfg.data.target_cols[0]
-        )  # type: ignore
+            df=df_train,
+            # targets=cfg.fize,
+        )
         df_test_dataset = mlflow.data.pandas_dataset.from_pandas(
-            df=df_test, targets=cfg.data.target_cols[0]
-        )  # type: ignore
+            df=df_test,
+            # targets=cfg.data.target_cols[0],
+        )
         mlflow.log_input(df_train_dataset, "training")
         mlflow.log_input(df_test_dataset, "testing")
 
@@ -113,11 +196,12 @@ def log_metadata(cfg, gs, X_train, y_train, X_test, y_test):
             value="best_Grid_search_model",
         )
 
+        # Log metrics for every fold
         for index, result in cv_results.iterrows():
-            child_run_name = "_".join(["child", run_name, str(index)])  # type: ignore
+            child_run_name = "_".join(["child", run_name, str(index)])
             with mlflow.start_run(
                 run_name=child_run_name, experiment_id=experiment_id, nested=True
-            ):  # , tags=best_metrics_dict):
+            ):
                 ps = result.filter(regex="param_").to_dict()
                 ms = result.filter(regex="mean_").to_dict()
                 stds = result.filter(regex="std_").to_dict()
@@ -130,8 +214,8 @@ def log_metadata(cfg, gs, X_train, y_train, X_test, y_test):
                 mlflow.log_metrics(stds)
 
                 # We will create the estimator at runtime
-                module_name = cfg.model.module_name  # e.g. "sklearn.linear_model"
-                class_name = cfg.model.class_name  # e.g. "LogisticRegression"
+                module_name = cfg.model.module_name
+                class_name = cfg.model.class_name
 
                 # Load "module.submodule.MyClass"
                 class_instance = getattr(
@@ -166,7 +250,7 @@ def log_metadata(cfg, gs, X_train, y_train, X_test, y_test):
                 model_uri = model_info.model_uri
                 loaded_model = mlflow.sklearn.load_model(model_uri=model_uri)
 
-                predictions = loaded_model.predict(X_test)  # type: ignore
+                predictions = loaded_model.predict(X_test)
 
                 eval_data = pd.DataFrame(y_test)
                 eval_data.columns = ["label"]
@@ -187,70 +271,23 @@ def log_metadata(cfg, gs, X_train, y_train, X_test, y_test):
     # mlflow.end_run()
 
 
-def train(X_train, y_train, cfg):
-    # Define the model hyperparameters
-    params = cfg.model.params
+# def retrieve_model_with_alias(
+#     model_name, model_alias="champion"
+# ) -> mlflow.pyfunc.PyFuncModel:
+#     best_model: mlflow.pyfunc.PyFuncModel = mlflow.pyfunc.load_model(
+#         model_uri=f"models:/{model_name}@{model_alias}"
+#     )
 
-    # Train the model
-    module_name = cfg.model.module_name  # e.g. "sklearn.linear_model"
-    class_name = cfg.model.class_name  # e.g. "LogisticRegression"
-
-    # We will create the estimator at runtime
-    import importlib
-
-    # Load "module.submodule.MyClass"
-    class_instance = getattr(importlib.import_module(module_name), class_name)
-
-    estimator = class_instance(**params)
-
-    # Grid search with cross validation
-    from sklearn.model_selection import StratifiedKFold
-
-    cv = StratifiedKFold(
-        n_splits=cfg.model.folds, random_state=cfg.random_state, shuffle=True
-    )
-
-    param_grid = dict(params)
-
-    scoring = list(
-        cfg.model.metrics.values()
-    )  # ['balanced_accuracy', 'f1_weighted', 'precision', 'recall', 'roc_auc']
-
-    evaluation_metric = cfg.model.evaluation_metric
-
-    gs = GridSearchCV(
-        estimator=estimator,
-        param_grid=param_grid,
-        scoring=scoring,
-        n_jobs=cfg.cv_n_jobs,
-        refit=evaluation_metric,
-        cv=cv,
-        verbose=1,
-        return_train_score=True,
-    )
-
-    gs.fit(X_train, y_train)
-
-    return gs
+#     # best_model
+#     return best_model
 
 
-def retrieve_model_with_alias(
-    model_name, model_alias="champion"
-) -> mlflow.pyfunc.PyFuncModel:
-    best_model: mlflow.pyfunc.PyFuncModel = mlflow.pyfunc.load_model(
-        model_uri=f"models:/{model_name}@{model_alias}"
-    )
+# def retrieve_model_with_version(
+#     model_name, model_version="v1"
+# ) -> mlflow.pyfunc.PyFuncModel:
+#     best_model: mlflow.pyfunc.PyFuncModel = mlflow.pyfunc.load_model(
+#         model_uri=f"models:/{model_name}/{model_version}"
+#     )
 
-    # best_model
-    return best_model
-
-
-def retrieve_model_with_version(
-    model_name, model_version="v1"
-) -> mlflow.pyfunc.PyFuncModel:
-    best_model: mlflow.pyfunc.PyFuncModel = mlflow.pyfunc.load_model(
-        model_uri=f"models:/{model_name}/{model_version}"
-    )
-
-    # best_model
-    return best_model
+#     # best_model
+#     return best_model

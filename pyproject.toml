@@ -23,6 +23,7 @@ great-expectations = "^0.18.17"
 zenml = "0.58.2"
 pyarrow = "15.0.2"
 mlflow = "^2.14.2"
+giskard = "^2.14.1"
 
 [tool.poetry.group.dev]
 [tool.poetry.group.dev.dependencies]

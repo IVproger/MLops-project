@@ -26,6 +26,10 @@ We use Docker to setup Airflow and run ZenML server. For local development and r
     mkdir -p ./services/airflow/dags ./services/airflow/logs ./services/airflow/plugins ./services/airflow/config
     echo -e "AIRFLOW_UID=$(id -u)" > .env
     ```
+3. Build images:
+   ```bash
+   docker compose build --pull
+   ```
 
 ### Setup Poetry
 

@@ -1,22 +1,34 @@
 import warnings
 
 warnings.filterwarnings("ignore")
+from omegaconf import DictConfig
 from sklearn.model_selection import GridSearchCV  # noqa: E402
 from zenml.client import Client  # noqa: E402
-import pandas as pd  # noqa: E402
+import pandas as pd
+from pandas import DataFrame # noqa: E402
 import mlflow  # noqa: E402
 import mlflow.sklearn  # noqa: E402
 import importlib  # noqa: E402
+import dvc.api
+from src.data import preprocess_data
 
 
-def fetch_features(name, version):
-    client = Client()
-    lst = client.list_artifact_versions(name=name, tag=version, sort_by="version").items
-    lst.reverse
+# TODO Rewrite to use ZenML
+def fetch_features(name: str, version: str, cfg: DictConfig, test=False):
+    # client = Client()
+    # lst = client.list_artifact_versions(name=name, tag=version, sort_by="version").items
+    # lst.reverse()
 
-    X, y = lst[0].load()
-
-    return X, y
+    
+    # if not test:
+    #     with dvc.api.open("data/samples/sample.csv", rev="v1.0") as fd:
+    #         return preprocess_data(cfg, pd.read_csv(fd))
+    # else:
+    #     with dvc.api.open("data/samples/sample.csv", rev="v2.0") as fd:
+    #         return preprocess_data(cfg, pd.read_csv(fd))
+        
+    return preprocess_data(cfg, pd.read_csv('data/samples/sample.csv'))        
+    
 
 
 def log_metadata(cfg, gs, X_train, y_train, X_test, y_test):
@@ -187,7 +199,7 @@ def log_metadata(cfg, gs, X_train, y_train, X_test, y_test):
     # mlflow.end_run()
 
 
-def train(X_train, y_train, cfg):
+def train(X_train: DataFrame, y_train: DataFrame, cfg: DictConfig):
     # Define the model hyperparameters
     params = cfg.model.params
 
@@ -195,6 +207,7 @@ def train(X_train, y_train, cfg):
     module_name = cfg.model.module_name  # e.g. "sklearn.linear_model"
     class_name = cfg.model.class_name  # e.g. "LogisticRegression"
 
+    print(params, module_name, class_name)
     # We will create the estimator at runtime
     import importlib
 

@@ -1,6 +1,6 @@
 import hydra
-from omegaconf import DictConfig, OmegaConf
-from src.model import fetch_features, fetch_validation_features, log_metadata, train
+from omegaconf import DictConfig
+from src.model import fetch_features, log_metadata, train  # noqa: E402
 
 
 def run(cfg: DictConfig):
@@ -18,14 +18,6 @@ def run(cfg: DictConfig):
         X_train,
         y_train,
         cfg,
-    )
-
-    print("Fetching validation features...")
-    X_validation, y_validation = fetch_validation_features(
-        name="features_target",
-        version=train_data_version,
-        cfg=cfg,
-        test=True,
     )
 
     print("Logging metadata...")

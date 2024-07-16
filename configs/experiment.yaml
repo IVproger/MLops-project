@@ -1,5 +1,5 @@
-experiment_name: "mlops_experiment"
-run_name: "multi_run"
+experiment_name: "MLOps experiment"
+run_name: "runner"
 
 test_size: 0.2
 random_state: 88

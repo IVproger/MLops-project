@@ -9,6 +9,7 @@ from airflow.models.baseoperator import chain
 AIRFLOW_HOME = os.environ.get("AIRFLOW_HOME")
 PROJECT_ROOT = os.path.join(AIRFLOW_HOME, "../..")
 VENV_PATH = os.environ.get("VENV_PATH")
+PATH = os.environ.get("PATH")
 
 
 @dag(
@@ -92,6 +93,14 @@ def data_extraction_workflow():
         append_env=True,
     )
 
+    push_to_git = BashOperator(
+        task_id="pust_to_git",
+        bash_command="scripts/push_sample_version.sh ",
+        cwd=PROJECT_ROOT,
+        env={"PATH": os.path.join(VENV_PATH, "bin") + ":" + PATH},
+        append_env=True,
+    )
+
     chain(
         extract_data_task,
         validate_data_task,
@@ -101,4 +110,4 @@ def data_extraction_workflow():
     )
 
 
-data_extraction_workflow = data_extraction_workflow()
+data_extract = data_extraction_workflow()

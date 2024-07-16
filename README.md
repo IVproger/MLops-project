@@ -1,5 +1,8 @@
 # MLOps Capstone project
 
+[![Code linting](https://github.com/IVproger/MLops-project/actions/workflows/pre-commit.yaml/badge.svg)](https://github.com/IVproger/MLops-project/actions/workflows/pre-commit.yaml)
+[![Code testing](https://github.com/IVproger/MLops-project/actions/workflows/test-code.yaml/badge.svg)](https://github.com/IVproger/MLops-project/actions/workflows/test-code.yaml)
+
 ## Predicting on-time, delayed and cancelled flights
 
 > Business problem revolves around improving operational efficiency and passenger satisfaction through accurate flight

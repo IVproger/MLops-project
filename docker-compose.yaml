@@ -24,6 +24,8 @@ x-airflow-common:
     ZENML_CONFIG_PATH: /project/services/zenml
   volumes:
     - ./:/project
+    - $HOME/.gitconfig:/home/airflow/.gitconfig
+    - $HOME/.git-credentials:/home/airflow/.git-credentials
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on

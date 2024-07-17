@@ -6,20 +6,17 @@ import importlib  # noqa: E402
 from omegaconf import DictConfig  # noqa: E402
 from sklearn.model_selection import GridSearchCV  # noqa: E402
 from pandas import DataFrame  # noqa: E402
-from src.data import preprocess_data, extract_data  # noqa: E402
-
+from zenml.client import Client
 
 mlflow.set_tracking_uri(uri="http://127.0.0.1:5000")
 
 
-# TODO Rewrite to use ZenML
 def fetch_features(name: str, version: str, cfg: DictConfig):
-    # client = Client()
-    # lst = client.list_artifact_versions(name=name, tag=version, sort_by="version").items
-    # lst.reverse()
+    client = Client()
+    lst = client.list_artifact_versions(name=name, tag=version, sort_by="version").items
+    lst.reverse()
 
-    df, _ = extract_data(version, cfg)
-    X, y = preprocess_data(cfg, df)
+    X, y = lst[0].load()
     return X, y
 
 

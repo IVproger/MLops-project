@@ -744,9 +744,9 @@ funcy==2.0 ; python_version >= "3.11" and python_version < "3.12" \
 gdown==5.2.0 ; python_version >= "3.11" and python_version < "3.12" \
     --hash=sha256:2145165062d85520a3cd98b356c9ed522c5e7984d408535409fd46f94defc787 \
     --hash=sha256:33083832d82b1101bdd0e9df3edd0fbc0e1c5f14c9d8c38d2a35bf1683b526d6
-giskard==2.14.1 ; python_version >= "3.11" and python_version < "3.12" \
-    --hash=sha256:0a561fef88353a0e316baed9edf7c377ddd4601b7eda0520a4e4fad42d2e50f4 \
-    --hash=sha256:acfd241e4266074d37bf13021628690717a3532513e247e7c67bf67ffbc879de
+giskard==2.14.0 ; python_version >= "3.11" and python_version < "3.12" \
+    --hash=sha256:6186da5871adc506c22417110da2baa40593c9a461e2d98a5f3918677ec3df3c \
+    --hash=sha256:f08a6497d24d7204d210888c9519d68ff71907241722f48443eb66759deabc66
 gitdb==4.0.11 ; python_version >= "3.11" and python_version < "3.12" \
     --hash=sha256:81a3407ddd2ee8df444cbacea00e2d038e40150acfa3001696fe0dcf1d3adfa4 \
     --hash=sha256:bf5421126136d6d0af55bc1e7c1af1c397a34f5b7bd79e776cd3e89785c2b04b

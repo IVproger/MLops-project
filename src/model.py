@@ -1,8 +1,9 @@
-import pandas as pd
+import giskard  # noqa
+import pandas as pd  # noqa: E402
 import mlflow  # noqa: E402
 import mlflow.sklearn  # noqa: E402
 import importlib  # noqa: E402
-from omegaconf import DictConfig
+from omegaconf import DictConfig  # noqa: E402
 from sklearn.model_selection import GridSearchCV  # noqa: E402
 from pandas import DataFrame  # noqa: E402
 from src.data import preprocess_data, extract_data  # noqa: E402

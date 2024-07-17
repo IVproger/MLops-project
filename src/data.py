@@ -143,8 +143,6 @@ def preprocess_data(
     for tf in cfg["time_features"]:
         df = dtf.encode_cyclic_time_data(df, tf[0], tf[1])
 
-    df = df.sample(n=10_000)
-
     # 5. Split the dataset into X and y
     X = df.drop(["Cancelled"], axis=1)
     y = df[["Cancelled"]]

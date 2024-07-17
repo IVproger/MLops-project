@@ -74,6 +74,7 @@ def train(
     )
 
     # Fit GridSearch
+    print("Starting GridSearch fit...")
     gs.fit(X_train, y_train.values.ravel())
 
     return gs
@@ -158,7 +159,6 @@ def log_metadata(
 
         # Log the performance metrics
         mlflow.log_metrics(best_metrics_dict)
-        print("DEBUG:", best_metrics_dict)
 
         # Set a tag that we can use to remind ourselves what this run was for
         mlflow.set_tag(cfg.model.tag_key, cfg.model.tag_value)

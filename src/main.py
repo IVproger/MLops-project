@@ -5,10 +5,11 @@ from src.model import fetch_features, log_metadata, train  # noqa: E402
 
 def run(cfg: DictConfig):
     train_data_version = cfg.train_data_version
+    name = cfg.data.artifact_name
 
     print("Fetching features...")
     X_train, y_train = fetch_features(
-        name="features_target",
+        name=name,
         version=train_data_version,
         cfg=cfg,
     )

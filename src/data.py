@@ -185,7 +185,7 @@ def load_features(X: pd.DataFrame, y: pd.DataFrame, version: str) -> None:
 
 def extract_data(version: str, cfg: DictConfig):
     with dvc.api.open(cfg.data.sample_path, rev=version) as fd:
-        return pd.read_csv(fd).sample(10_000), version
+        return pd.read_csv(fd), version
 
 
 if __name__ == "__main__":

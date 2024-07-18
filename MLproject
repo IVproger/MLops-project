@@ -5,3 +5,5 @@ entry_points:
     command: "python3 -m src.main --multirun"
   evaluate:
     command: "python3 -m src.evaluate"
+  validate:
+    command: "python3 -m src.validate"

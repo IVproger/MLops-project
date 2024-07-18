@@ -175,3 +175,4 @@ services/airflow/*
 /multirun
 /mlruns
 /mlartifacts
+/results

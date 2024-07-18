@@ -1,6 +1,6 @@
 import hydra
 from omegaconf import DictConfig
-from src.model import fetch_features, log_metadata, train  # noqa: E402
+from src.model import fetch_features, log_metadata, train
 
 
 def run(cfg: DictConfig):

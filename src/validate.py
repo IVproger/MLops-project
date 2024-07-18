@@ -1,10 +1,11 @@
 import warnings
 
 warnings.filterwarnings("ignore")
-from src.data import extract_data  # noqa: E402
-from src.utils import init_hydra  # noqa: E402
-from src.data import preprocess_data  # noqa: E402
-import giskard  # noqa: E402
+
+from src.data import extract_data
+from src.utils import init_hydra
+from src.data import preprocess_data
+import giskard
 
 
 def wrap_dataset():

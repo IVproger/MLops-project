@@ -1,11 +1,11 @@
 import giskard  # noqa
-import pandas as pd  # noqa: E402
-import mlflow  # noqa: E402
-import mlflow.sklearn  # noqa: E402
-import importlib  # noqa: E402
-from omegaconf import DictConfig  # noqa: E402
-from sklearn.model_selection import GridSearchCV  # noqa: E402
-from pandas import DataFrame  # noqa: E402
+import pandas as pd
+import mlflow
+import mlflow.sklearn
+import importlib
+from omegaconf import DictConfig
+from sklearn.model_selection import GridSearchCV
+from pandas import DataFrame
 from zenml.client import Client
 
 mlflow.set_tracking_uri(uri="http://127.0.0.1:5000")

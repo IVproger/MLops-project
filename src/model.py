@@ -11,6 +11,8 @@ from zenml.client import Client
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc, confusion_matrix, ConfusionMatrixDisplay
 
+from src.data import extract_data, preprocess_data
+
 mlflow.set_tracking_uri(uri="http://127.0.0.1:5000")
 
 
@@ -20,6 +22,16 @@ def fetch_features(name: str, version: str, cfg: DictConfig):
     lst.reverse()
 
     X, y = lst[0].load()
+    return X, y
+
+
+def fetch_features_old(name: str, version: str, cfg: DictConfig):
+    # client = Client()
+    # lst = client.list_artifact_versions(name=name, tag=version, sort_by="version").items
+    # lst.reverse()
+
+    df, _ = extract_data(version, cfg)
+    X, y = preprocess_data(cfg, df)
     return X, y
 
 

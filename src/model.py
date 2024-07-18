@@ -373,11 +373,13 @@ def choose_champion(model_name: str) -> list:
             version = parse_version_from_string(model_alias)
             model = retrieve_model_with_alias(model_name, model_alias)
             metrics = client.get_metric_history(model.metadata.run_id, "mean_test_f1")
-
+            if model_alias == "champion":
+                return model
             if metrics[0].value > max_f1:
                 max_f1 = metrics[0].value
                 champion = model
                 champion_version = version
+                print(champion_version)
 
     client.set_registered_model_alias(
         name=model_name,

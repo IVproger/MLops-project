@@ -120,14 +120,17 @@ def read_datastore() -> tuple[pd.DataFrame, str]:
 
 
 def preprocess_data(
-    cfg: DictConfig, df: pd.DataFrame
+    cfg: DictConfig, df: pd.DataFrame, require_target: bool = True
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Preprocess the data to extract features and target.
     """
 
     # 1. Drop unnecessary features
-    df = dtf.pull_features(df, cfg["required"])
+    required: list[str] = cfg.required
+    if not require_target and "Cancelled" in required:
+        required.remove("Cancelled")
+    df = dtf.pull_features(df, required)
 
     # 2. Hash string features
     for c in cfg["hash_features"]:
@@ -144,9 +147,12 @@ def preprocess_data(
         df = dtf.encode_cyclic_time_data(df, tf[0], tf[1])
 
     # 5. Split the dataset into X and y
-    X = df.drop(["Cancelled"], axis=1)
-    y = df[["Cancelled"]]
-    return X, y
+    if require_target or "Cancelled" in df.columns:
+        X = df.drop(["Cancelled"], axis=1)
+        y = df[["Cancelled"]]
+        return X, y
+    else:
+        return df, df[[]]
 
 
 def validate_features(

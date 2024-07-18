@@ -1,5 +1,6 @@
-from src.model import retrieve_model_with_alias
-from src.utils import init_hydra
+import hydra
+import mlflow
+from omegaconf import DictConfig
 from src.model import fetch_features
 import numpy as np
 from sklearn.metrics import (
@@ -13,9 +14,22 @@ from sklearn.metrics import (
 from src.model import choose_champion
 
 
-def main():
-    cfg = init_hydra("main")
+@hydra.main(config_path="../configs", config_name="main", version_base=None)
+def main(cfg: DictConfig):
+    # Find, mark, and return champion
+    champion, _ = choose_champion(cfg.model.model_name)
 
+    # Download the champion model
+    client = mlflow.tracking.MlflowClient()
+    client.download_artifacts(
+        champion.metadata.run_id, cfg.model.artifact_path, "models"
+    )
+
+    # Evaluate it
+    evaluate(cfg, champion)
+
+
+def evaluate(cfg, champion):
     print("Fetching features for testing...")
     X_test, y_test = fetch_features(
         name=cfg.data.artifact_name,
@@ -23,11 +37,8 @@ def main():
         cfg=cfg,
     )
 
-    print("Fetching champion model for testing...")
-    model = retrieve_model_with_alias("xgboost")
-
     # Predict Test Data
-    y_pred = model.predict(X_test)
+    y_pred = champion.predict(X_test)
 
     # Convert probabilities to class labels
     class_labels = np.argmax(y_pred, axis=1)
@@ -53,4 +64,4 @@ def main():
 
 
 if __name__ == "__main__":
-    print(choose_champion("xgboost"))
+    main()

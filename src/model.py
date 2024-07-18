@@ -1,6 +1,5 @@
 import giskard  # noqa
 import os
-import re
 import pandas as pd  # noqa: E402
 import mlflow  # noqa: E402
 import mlflow.sklearn  # noqa: E402
@@ -353,38 +352,31 @@ def retrieve_model_with_version(
     return best_model
 
 
-def parse_version_from_string(s):
-    # Use regex to find all sequences of digits (\d+) in the string
-    matches = re.findall(r"\d+", s)
-    if matches:
-        # Assuming you want the first sequence of digits found
-        return int(matches[0])
-    else:
-        return None
-
-
-def choose_champion(model_name: str) -> list:
+def choose_champion(model_name: str):
     client = mlflow.tracking.MlflowClient()
     max_f1 = -10000000
     champion = None
     champion_version = None
     for registered_model in client.search_registered_models():
+        if registered_model.aliases.get("champion"):
+            return (
+                retrieve_model_with_alias(model_name, "champion"),
+                registered_model.aliases.get("champion"),
+            )
+
         for model_alias in registered_model.aliases.keys():
-            version = parse_version_from_string(model_alias)
             model = retrieve_model_with_alias(model_name, model_alias)
             metrics = client.get_metric_history(model.metadata.run_id, "mean_test_f1")
-            if model_alias == "champion":
-                return model
+
             if metrics[0].value > max_f1:
                 max_f1 = metrics[0].value
                 champion = model
-                champion_version = version
-                print(champion_version)
+                champion_version = registered_model.aliases.get(model_alias)
 
     client.set_registered_model_alias(
         name=model_name,
         alias="champion",
-        version=str(champion_version),
+        version=champion_version,
     )
 
-    return champion
+    return champion, champion_version

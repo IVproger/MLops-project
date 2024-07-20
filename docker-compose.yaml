@@ -215,5 +215,41 @@ services:
         limits:
           memory: 1G
 
+  # Model serving
+  ml:
+    build:
+      context: .
+      dockerfile: api/ml.Dockerfile
+    restart: always
+    ports:
+      - "8082:8080"
+    profiles: [ api ]
+
+  # Model serving
+  ml-api:
+    build:
+      context: .
+      dockerfile: api/api.Dockerfile
+    restart: always
+    ports:
+      - "8083:5001"
+    profiles: [ api ]
+
+  # Model serving
+  ml-gradio:
+    build:
+      context: .
+      dockerfile: api/gradio.Dockerfile
+    restart: always
+    ports:
+      - "8084:5155"
+    volumes:
+      - ./:/project
+    user: "${AIRFLOW_UID:-50000}:0"
+    environment:
+      INVOCATIONS_URL: http://ml:8082/invocations
+    profiles: [ api ]
+    depends_on: [ ml ]
+
 volumes:
   postgres-db-volume:

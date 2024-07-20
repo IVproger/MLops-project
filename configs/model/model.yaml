@@ -12,7 +12,9 @@ metrics:
   accuracy: "accuracy"
   f1: "f1"
 
-best_model_name: "xgboost"
-best_model_alias: "champion"
+models_dir: "models"
 labels: {false: "on-time", true: "cancelled"}
 f1_threshold: 0.3
+
+evaluate_model_name: "xgboost"
+evaluate_model_alias: "champion"

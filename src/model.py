@@ -340,10 +340,6 @@ def log_metadata(
 
                 print(f"metrics:\n{results.metrics}")
 
-                mlflow.end_run()
-
-        mlflow.end_run()
-
 
 def retrieve_model_with_alias(model_name, model_alias) -> mlflow.pyfunc.PyFuncModel:
     model: mlflow.pyfunc.PyFuncModel = mlflow.pyfunc.load_model(

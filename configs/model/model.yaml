@@ -3,16 +3,15 @@ defaults:
 
 folds: 3
 
-evaluation_metric: "f1"
-cv_evaluation_metric: "mean_test_f1"
+evaluation_metric: "f1_weighted"
+cv_evaluation_metric: "mean_test_f1_weighted"
 
 pyfunc_predict_fn: "predict_proba"
 
 metrics:
   accuracy: "accuracy"
-  f1: "f1"
+  f1: "f1_weighted"
 
 best_model_name: "xgboost"
 best_model_alias: "champion"
 labels: {false: "on-time", true: "cancelled"}
-f1_threshold: 0.3

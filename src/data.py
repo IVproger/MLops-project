@@ -120,21 +120,18 @@ def read_datastore() -> tuple[pd.DataFrame, str]:
 
 
 def preprocess_data(
-    cfg: DictConfig, df: pd.DataFrame, require_target: bool = True
+    cfg: DictConfig, df: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Preprocess the data to extract features and target.
+    Preprocess the data and extract features and target.
     """
 
     # 1. Drop unnecessary features
     required: list[str] = cfg.required
-    if not require_target and "Cancelled" in required:
-        required.remove("Cancelled")
     df = dtf.pull_features(df, required)
 
-    # 2. Hash string features
-    for c in cfg["hash_features"]:
-        df = dtf.hash_feature(df, c)
+    # 2. Drop NaNs
+    df.dropna(axis=1, inplace=True)
 
     # 3. Fix time values and encode them as cyclic features
     for c in cfg["hhmm"]:
@@ -146,13 +143,14 @@ def preprocess_data(
     for tf in cfg["time_features"]:
         df = dtf.encode_cyclic_time_data(df, tf[0], tf[1])
 
-    # 5. Split the dataset into X and y
-    if require_target or "Cancelled" in df.columns:
-        X = df.drop(["Cancelled"], axis=1)
-        y = df[["Cancelled"]]
-        return X, y
-    else:
-        return df, df[[]]
+    # 5. Hash categorical features
+    for c in df.columns[df.dtypes == "object"]:
+        df = dtf.hash_feature(df, c)
+
+    # Split the dataset into X and y
+    X = df.drop(["Cancelled"], axis=1)
+    y = df["Cancelled"]
+    return X, y
 
 
 def validate_features(

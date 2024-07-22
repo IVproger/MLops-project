@@ -6,14 +6,6 @@ from pandas import DataFrame
 from sklearn.pipeline import FunctionTransformer
 
 
-def sin_transformer(period):
-    return FunctionTransformer(lambda x: np.sin(x / period * 2 * np.pi))
-
-
-def cos_transformer(period):
-    return FunctionTransformer(lambda x: np.cos(x / period * 2 * np.pi))
-
-
 def pull_features(df: DataFrame, required: list[str]) -> DataFrame:
     """
     Extract only the required features from the dataframe
@@ -40,6 +32,14 @@ def hash_feature(df: DataFrame, col: str, num_buckets=1000):
     return df
 
 
+def sin_transformer(period):
+    return FunctionTransformer(lambda x: np.sin(x / period * 2 * np.pi))
+
+
+def cos_transformer(period):
+    return FunctionTransformer(lambda x: np.cos(x / period * 2 * np.pi))
+
+
 def encode_cyclic_time_data(df: DataFrame, col: str, period: int) -> DataFrame:
     # Check that the column exists
     if col not in df.columns:
@@ -49,13 +49,13 @@ def encode_cyclic_time_data(df: DataFrame, col: str, period: int) -> DataFrame:
     df[col + "_sin"] = sin_transformer(period).fit_transform(df[col])
     df[col + "_cos"] = cos_transformer(period).fit_transform(df[col])
 
-    df.drop([col], axis=1, inplace=True)
+    # df.drop([col], axis=1, inplace=True)
 
     return df
 
 
 def fix_hhmm(df: DataFrame, col: str) -> tuple[DataFrame, str, str]:
-    # # Encoding hours and minutes
+    # Encoding hours and minutes
     colHH = col + "HH"
     colMM = col + "MM"
     df[colHH] = df[col].apply(lambda hhmm: hhmm // 100)

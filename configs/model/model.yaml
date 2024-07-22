@@ -12,6 +12,5 @@ metrics:
   accuracy: "accuracy"
   f1: "f1_weighted"
 
-best_model_name: "xgboost"
-best_model_alias: "champion"
+models_dir: "models"
 labels: {false: "on-time", true: "cancelled"}

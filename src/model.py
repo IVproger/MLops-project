@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import giskard  # noqa
 import os
 import seaborn as sn
@@ -354,6 +356,7 @@ def log_metadata(
 
 
 def retrieve_model_with_alias(model_name, model_alias) -> mlflow.pyfunc.PyFuncModel:
+    print(f"models:/{model_name}@{model_alias}")
     model: mlflow.pyfunc.PyFuncModel = mlflow.pyfunc.load_model(
         model_uri=f"models:/{model_name}@{model_alias}"
     )
@@ -393,6 +396,10 @@ def choose_champion(model_name: str):
                 champion = model
                 champion_version = registered_model.aliases.get(model_alias)
 
+    if champion is None:
+        print("No champion found")
+        return None, None
+
     client.set_registered_model_alias(
         name=model_name,
         alias="champion",
@@ -400,3 +407,40 @@ def choose_champion(model_name: str):
     )
 
     return champion, champion_version
+
+
+def save_every_challenger(cfg: DictConfig):
+    client = mlflow.tracking.MlflowClient()
+    for registered_model in client.search_registered_models():
+        if registered_model.name != cfg.model.model_name:
+            continue  # Skip unrelated models
+
+        for model_alias in registered_model.aliases.keys():
+            if not (
+                model_alias.startswith("champion")
+                or model_alias.startswith("challenger")
+            ):
+                continue  # Skip wrong aliases
+
+            model = retrieve_model_with_alias(registered_model.name, model_alias)
+            dst_path = (
+                Path(cfg.model.models_dir) / f"{registered_model.name}-{model_alias}"
+            )
+            dst_path.mkdir(parents=True, exist_ok=True)
+            client.download_artifacts(
+                model.metadata.run_id, cfg.model.artifact_path, str(dst_path)
+            )
+
+
+def scan_models_dir(cfg: DictConfig):
+    models_dir = Path(cfg.model.models_dir)
+    for model_dir in models_dir.iterdir():
+        if not model_dir.is_dir():
+            continue
+        for subdir in model_dir.iterdir():
+            if not subdir.is_dir():
+                continue
+
+            model_name, model_alias = model_dir.name.split("-")
+            model = mlflow.pyfunc.load_model(str(subdir))
+            yield model_name, model_alias, model

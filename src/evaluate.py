@@ -1,7 +1,6 @@
 import hydra
-import mlflow
 from omegaconf import DictConfig
-from src.model import fetch_features
+from src.model import fetch_features, save_every_challenger, retrieve_model_with_alias
 import numpy as np
 from sklearn.metrics import (
     accuracy_score,
@@ -11,25 +10,22 @@ from sklearn.metrics import (
     roc_auc_score,
     classification_report,
 )
-from src.model import choose_champion
 
 
 @hydra.main(config_path="../configs", config_name="main", version_base=None)
 def main(cfg: DictConfig):
-    # Find, mark, and return champion
-    champion, _ = choose_champion(cfg.model.model_name)
+    save_every_challenger(cfg)
 
-    # Download the champion model
-    client = mlflow.tracking.MlflowClient()
-    client.download_artifacts(
-        champion.metadata.run_id, cfg.model.artifact_path, "models"
+    # Retrieve specified model
+    model = retrieve_model_with_alias(
+        cfg.model.evaluate_model_name, cfg.model.evaluate_model_alias
     )
 
     # Evaluate it
-    evaluate(cfg, champion)
+    evaluate(cfg, model)
 
 
-def evaluate(cfg, champion):
+def evaluate(cfg, model):
     print("Fetching features for testing...")
     X_test, y_test = fetch_features(
         name=cfg.data.artifact_name,
@@ -38,7 +34,7 @@ def evaluate(cfg, champion):
     )
 
     # Predict Test Data
-    y_pred = champion.predict(X_test)
+    y_pred = model.predict(X_test)
 
     # Convert probabilities to class labels
     class_labels = np.argmax(y_pred, axis=1)

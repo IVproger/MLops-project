@@ -1,26 +1,7 @@
 import hashlib
 import numpy as np
-from pandas import DataFrame
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import FunctionTransformer
-
-
-def pull_features(df: DataFrame, required: list[str]) -> DataFrame:
-    """
-    Extract only the required features from the dataframe
-    """
-    # Check that the required columns are there
-    for c in required:
-        if c not in df.columns:
-            raise ValueError(
-                f"Dataframe lacks one or more of the required columns: {c}"
-            )
-    pulled_df = df.copy()
-    columns_to_drop = set(df.columns) - set(required)
-
-    pulled_df.drop(list(columns_to_drop), axis=1, inplace=True)
-
-    return pulled_df
 
 
 class feature_extractor(BaseEstimator, TransformerMixin):

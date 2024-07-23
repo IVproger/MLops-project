@@ -16,6 +16,8 @@ from great_expectations.datasource.fluent import PandasDatasource
 from src import data_transformations as dtf
 import dvc.api
 
+from src.utils import init_hydra
+
 
 def sample_data(cfg: DictConfig):
     """
@@ -176,7 +178,7 @@ def validate_features(
     """
     Validate the data using Great Expectations.
     """
-    cfg = OmegaConf.load("configs/data_sample.yaml")
+    cfg = init_hydra("main")
     context = gx.get_context(project_root_dir=cfg.data.context_dir_path, mode="file")
     ds: PandasDatasource = context.sources.add_or_update_pandas(
         name="transformed_sample"
@@ -191,8 +193,7 @@ def validate_features(
     if checkpoint_result.success:
         print("Validation successful.")
     else:
-        print("Validation failed.")
-        print(checkpoint_result)
+        raise Exception("Validation failed: ", checkpoint_result)
 
     return X, y
 

@@ -1,7 +1,7 @@
 data:
-  dataset_name: "Combined_Flights_2022"
-  target_cols: ["Cancelled"]
-  cat_cols: ["Airline"]
+  dataset_name: Combined_Flights_2022
+  target_cols:
+  - Cancelled
   url: https://drive.google.com/uc?id=1CKXjF6xZEgjYsdwfCMxoHChI7J5WjjdI
   output: datastore/data.csv
   datastore_path: datastore/data.csv
@@ -9,7 +9,7 @@ data:
   sample_version_path: data/samples/sample.csv.dvc
   context_dir_path: ./services
   sample_size: 0.2
-  artifact_name: "features_target"
-  last_included_row_number: 1631328
-  data_version: v2.0
-  version_number: 2
+  artifact_name: features_target
+  last_included_row_number: 2446991
+  data_version: v7.0
+  version_number: 7

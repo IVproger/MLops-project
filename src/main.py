@@ -8,11 +8,7 @@ def run(cfg: DictConfig):
     name = cfg.data.artifact_name
 
     print("Fetching features...")
-    X_train, y_train = fetch_features(
-        name=name,
-        version=train_data_version,
-        cfg=cfg,
-    )
+    X_train, y_train = fetch_features(name=name, version=train_data_version)
 
     print("Starting training...")
     gs = train(
@@ -25,7 +21,7 @@ def run(cfg: DictConfig):
     X_test, y_test = fetch_features(
         name="features_target",
         version=test_data_version,
-        cfg=cfg,
+        is_test=True,
     )
 
     print("Logging metadata...")

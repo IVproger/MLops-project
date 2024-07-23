@@ -30,7 +30,7 @@ def evaluate(cfg, model):
     X_test, y_test = fetch_features(
         name=cfg.data.artifact_name,
         version=cfg.test_data_version,
-        cfg=cfg,
+        is_test=True,
     )
 
     # Predict Test Data

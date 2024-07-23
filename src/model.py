@@ -2,6 +2,8 @@ from pathlib import Path
 
 import giskard  # noqa
 import os
+import seaborn as sn
+import numpy as np
 import pandas as pd  # noqa: E402
 import mlflow  # noqa: E402
 import mlflow.sklearn  # noqa: E402
@@ -11,19 +13,42 @@ from sklearn.model_selection import GridSearchCV  # noqa: E402
 from pandas import DataFrame  # noqa: E402
 from zenml.client import Client
 import matplotlib.pyplot as plt
-from sklearn.metrics import roc_curve, auc, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import roc_curve, auc, confusion_matrix, f1_score
 
 from src.data import extract_data, preprocess_data
 
 mlflow.set_tracking_uri(uri="http://127.0.0.1:5000")
 
 
-def fetch_features(name: str, version: str, cfg: DictConfig):
+def fetch_features(name: str, version: str, is_test: bool = False):
     client = Client()
     lst = client.list_artifact_versions(name=name, tag=version, sort_by="version").items
     lst.reverse()
 
+    # Load the latest version
     X, y = lst[0].load()
+
+    if not is_test:
+        # Correctly concatenate X and y along columns
+        df = pd.concat([X, y], axis=1)
+
+        # Separate instances based on 'Cancelled' status
+        cancelled = df[df["Cancelled"]]
+        on_time = df[~df["Cancelled"]]
+
+        # Calculate the fraction to sample from the on_time instances to balance the classes
+        representative_percent = (cancelled.shape[0] * 100 / on_time.shape[0]) / 100
+
+        # Sample from the on_time instances
+        on_time_sampled = on_time.sample(frac=representative_percent)
+
+        # Concatenate the balanced datasets
+        df_balanced = pd.concat([cancelled, on_time_sampled])
+
+        # Separate features and target
+        X = df_balanced.drop("Cancelled", axis=1)
+        y = df_balanced["Cancelled"]
+
     return X, y
 
 
@@ -118,8 +143,8 @@ def plot_performance_charts(model, X_test, y_test, run_name):
 
     # Generate Confusion Matrix
     y_pred = model.predict(X_test)
-    cm = confusion_matrix(y_test, y_pred)
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm)
+    conf_mat = confusion_matrix(y_test, y_pred)
+    disp = sn.heatmap(conf_mat / np.sum(conf_mat), annot=True, fmt=".2%")
     disp.plot()
     cm_path = f"{run_name}_confusion_matrix.png"
     plt.savefig(cm_path)
@@ -151,6 +176,10 @@ def download_charts(run_id, destination_folder="results"):
         # Download the artifact
         client.download_artifacts(run_id, artifact_path, destination_folder)
         print(f"Downloaded: {artifact_path} to {local_path}")
+
+
+def f1_score_weighted(eval_df, _builtin_metrics):
+    return f1_score(eval_df["target"], eval_df["prediction"], average="weighted")
 
 
 def log_metadata(
@@ -338,6 +367,12 @@ def log_metadata(
                     targets="label",
                     predictions="predictions",
                     evaluators=["default"],
+                    extra_metrics=[
+                        mlflow.models.make_metric(
+                            eval_fn=f1_score_weighted,
+                            greater_is_better=True,
+                        )
+                    ],
                 )
 
                 print(f"metrics:\n{results.metrics}")

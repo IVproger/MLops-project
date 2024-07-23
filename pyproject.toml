@@ -28,6 +28,7 @@ giskard = "2.14.0"
 xgboost = "^2.1.0"
 flask = "3.0.3"
 gradio = "3.50.2"
+imblearn = "^0.0"
 
 [tool.poetry.group.dev]
 [tool.poetry.group.dev.dependencies]

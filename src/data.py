@@ -8,6 +8,7 @@ from pathlib import Path
 import math
 import gdown
 import pandas as pd
+from sklearn.pipeline import Pipeline
 import zenml
 from omegaconf import DictConfig, OmegaConf
 import great_expectations as gx
@@ -120,39 +121,53 @@ def read_datastore() -> tuple[pd.DataFrame, str]:
 
 
 def preprocess_data(
-    cfg: DictConfig, df: pd.DataFrame, require_target: bool = True
+    cfg: DictConfig, df: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Preprocess the data to extract features and target.
+    Preprocess the data and return features and target
     """
 
-    # 1. Drop unnecessary features
-    required: list[str] = cfg.required
-    if not require_target and "Cancelled" in required:
-        required.remove("Cancelled")
-    df = dtf.pull_features(df, required)
+    # Drop NaNs
+    df = df.dropna(axis=1)
 
-    # 2. Hash string features
-    for c in cfg["hash_features"]:
-        df = dtf.hash_feature(df, c)
+    # Split the dataset into X and y
+    X = df.drop(["Cancelled"], axis=1)
+    y = df[["Cancelled"]]
 
-    # 3. Fix time values and encode them as cyclic features
-    for c in cfg["hhmm"]:
-        df, colHH, colMM = dtf.fix_hhmm(df, c)
-        df = dtf.encode_cyclic_time_data(df, colHH, 24)
-        df = dtf.encode_cyclic_time_data(df, colMM, 60)
+    # Feature extractor
+    feature_extractor = (
+        "feature_extractor",
+        dtf.feature_extractor(cfg.required),
+    )
 
-    # 4. Encode remaining cyclic features
-    for tf in cfg["time_features"]:
-        df = dtf.encode_cyclic_time_data(df, tf[0], tf[1])
+    # Transformers for cyclic data
+    cyclic_transformers = [
+        (f"cyclic_{feature}", dtf.cyclic_transformer(feature, period))
+        for (feature, period) in cfg.time_features
+    ]
 
-    # 5. Split the dataset into X and y
-    if require_target or "Cancelled" in df.columns:
-        X = df.drop(["Cancelled"], axis=1)
-        y = df[["Cancelled"]]
-        return X, y
-    else:
-        return df, df[[]]
+    # Transformers for HHMM data
+    hhmm_transformers = [
+        (f"hhmm_{feature}", dtf.hhmm_transformer(feature)) for feature in cfg.hhmm
+    ]
+
+    # Transformers for hashing
+    hash_transformers = [
+        (f"hash_{feature}", dtf.hash_transformer(feature))
+        for feature in df.columns[df.dtypes == "object"]
+    ]
+
+    # Assembling the pipeline
+    pipeline = Pipeline(
+        [
+            feature_extractor,
+            *cyclic_transformers,
+            *hhmm_transformers,
+            *hash_transformers,
+        ]
+    )
+
+    return pipeline.transform(X), y
 
 
 def validate_features(

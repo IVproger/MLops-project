@@ -169,7 +169,7 @@ def preprocess_data(
         ]
     )
 
-    return pipeline.transform(X), y
+    return pd.DataFrame(pipeline.transform(X)), y
 
 
 def validate_features(

@@ -1,5 +1,12 @@
-# Scripts outline
-- `install_requirements.sh` - installs all of the requirements. Make sure that you have activated a local environment.
-- `test_data.sh` - installs, tests, and runs GX on the data.
-- `airflow_activate.sh` - run all airflow services to track and run DAGs.
-- `airflow_activate.sh` - delete all processes of airflow to clean up the working directory and restart airflow piplines.
+# Scipts
+```
+scripts
+├── airflow_activate.sh      # Outdated by Docker
+├── airflow_cleanup.sh       # Outdated by Docker
+├── airflow_logs.sh          # Outdated by Docker
+├── extend_activate.sh       # "Extends" shell to include AIRFLOW_HOME env var
+├── extract_data.sh          # Runs src.data Python script
+├── install_requirements.sh  # Installs dependencies
+├── push_sample_version.sh   # Outdated
+└── test_data.sh             # Samples, validates, versions, and commits data
+```

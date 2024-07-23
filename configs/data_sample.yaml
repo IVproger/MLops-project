@@ -10,6 +10,6 @@ data:
   context_dir_path: ./services
   sample_size: 0.2
   artifact_name: features_target
-  last_included_row_number: 2446992
-  data_version: v3.0
-  version_number: 3
+  last_included_row_number: 3262656
+  data_version: v4.0
+  version_number: 4

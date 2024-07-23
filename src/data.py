@@ -61,16 +61,6 @@ def sample_data(cfg: DictConfig):
         print("Sampling data...")
         resulted_sample = data
 
-        # Take the representative sample of 50/50 % of classes instances
-        cancelled = resulted_sample[resulted_sample["Cancelled"]]
-        on_time = resulted_sample[~resulted_sample["Cancelled"]]
-
-        representative_persent = (cancelled.shape[0] * 100 / on_time.shape[0]) / 100
-
-        on_time = on_time.sample(frac=representative_persent)
-
-        df = pd.concat([cancelled, on_time])
-
         # Create a deep copy of cfg to modify without affecting the original
         updated_cfg = copy.deepcopy(cfg)
 
@@ -86,7 +76,7 @@ def sample_data(cfg: DictConfig):
         updated_cfg.data.version_number = updated_cfg.data.version_number + 1
 
         # Return both the sampled data and the updated configuration
-        return df, updated_cfg
+        return resulted_sample, updated_cfg
     except Exception as e:
         print("Error in loading or sampling the data: ", e)
         return None, cfg

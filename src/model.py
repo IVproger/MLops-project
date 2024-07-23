@@ -20,12 +20,35 @@ from src.data import extract_data, preprocess_data
 mlflow.set_tracking_uri(uri="http://127.0.0.1:5000")
 
 
-def fetch_features(name: str, version: str, cfg: DictConfig):
+def fetch_features(name: str, version: str, is_test: bool = False):
     client = Client()
     lst = client.list_artifact_versions(name=name, tag=version, sort_by="version").items
     lst.reverse()
 
+    # Load the latest version
     X, y = lst[0].load()
+
+    if not is_test:
+        # Correctly concatenate X and y along columns
+        df = pd.concat([X, y], axis=1)
+
+        # Separate instances based on 'Cancelled' status
+        cancelled = df[df["Cancelled"]]
+        on_time = df[~df["Cancelled"]]
+
+        # Calculate the fraction to sample from the on_time instances to balance the classes
+        representative_percent = (cancelled.shape[0] * 100 / on_time.shape[0]) / 100
+
+        # Sample from the on_time instances
+        on_time_sampled = on_time.sample(frac=representative_percent)
+
+        # Concatenate the balanced datasets
+        df_balanced = pd.concat([cancelled, on_time_sampled])
+
+        # Separate features and target
+        X = df_balanced.drop("Cancelled", axis=1)
+        y = df_balanced["Cancelled"]
+
     return X, y
 
 

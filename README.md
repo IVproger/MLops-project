@@ -85,3 +85,6 @@ We use Docker Compose to run all services of Airflow and ZenML server.
    ```
 3. Wait for all models to train.
 4. Access MLFlow server at http://localhost:5000.
+
+## Docs
+Each folder contains a `README.md` file with short description for every file. Code is well-documented with inline comments and representative symbol    names

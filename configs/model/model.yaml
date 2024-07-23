@@ -14,3 +14,4 @@ metrics:
 
 models_dir: "models"
 labels: {false: "on-time", true: "cancelled"}
+f1_threshold: 0.3

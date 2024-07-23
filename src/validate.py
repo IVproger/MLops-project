@@ -109,7 +109,10 @@ def run_model_tests(
     # Declare test suite
     test_suite = giskard.Suite(name=suite_name)
     test1 = giskard.testing.test_f1(
-        model=model, dataset=dataset, threshold=f1_threshold
+        # TODO: F1 weighted
+        model=model,
+        dataset=dataset,
+        threshold=f1_threshold,
     )
 
     # Run the test suite

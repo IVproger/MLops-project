@@ -7,3 +7,7 @@ entry_points:
     command: "python3 -m src.evaluate"
   validate:
     command: "python3 -m src.validate"
+  transform:
+    command: "python3 ./pipelines/data_prepare.py"
+  extract:
+    command: "./airflow.sh dags test data_extraction_v1_dag"

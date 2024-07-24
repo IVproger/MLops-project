@@ -5,13 +5,6 @@
     {
       "expectation_type": "expect_column_values_to_not_be_null",
       "kwargs": {
-        "column": "FlightDate"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
         "column": "Airline"
       },
       "meta": {}
@@ -33,13 +26,6 @@
     {
       "expectation_type": "expect_column_values_to_not_be_null",
       "kwargs": {
-        "column": "Diverted"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
         "column": "CRSDepTime"
       },
       "meta": {}
@@ -55,13 +41,6 @@
       "expectation_type": "expect_column_values_to_not_be_null",
       "kwargs": {
         "column": "Distance"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
-        "column": "Year"
       },
       "meta": {}
     },
@@ -110,21 +89,7 @@
     {
       "expectation_type": "expect_column_values_to_not_be_null",
       "kwargs": {
-        "column": "DOT_ID_Marketing_Airline"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
         "column": "IATA_Code_Marketing_Airline"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
-        "column": "Flight_Number_Marketing_Airline"
       },
       "meta": {}
     },
@@ -138,56 +103,7 @@
     {
       "expectation_type": "expect_column_values_to_not_be_null",
       "kwargs": {
-        "column": "DOT_ID_Operating_Airline"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
         "column": "IATA_Code_Operating_Airline"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
-        "column": "Flight_Number_Operating_Airline"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
-        "column": "OriginAirportID"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
-        "column": "OriginAirportSeqID"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
-        "column": "OriginCityMarketID"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
-        "column": "OriginCityName"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
-        "column": "OriginState"
       },
       "meta": {}
     },
@@ -201,49 +117,7 @@
     {
       "expectation_type": "expect_column_values_to_not_be_null",
       "kwargs": {
-        "column": "OriginStateName"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
         "column": "OriginWac"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
-        "column": "DestAirportID"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
-        "column": "DestAirportSeqID"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
-        "column": "DestCityMarketID"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
-        "column": "DestCityName"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
-        "column": "DestState"
       },
       "meta": {}
     },
@@ -257,21 +131,7 @@
     {
       "expectation_type": "expect_column_values_to_not_be_null",
       "kwargs": {
-        "column": "DestStateName"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
         "column": "DestWac"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
-        "column": "DepTimeBlk"
       },
       "meta": {}
     },
@@ -285,21 +145,14 @@
     {
       "expectation_type": "expect_column_values_to_not_be_null",
       "kwargs": {
-        "column": "ArrTimeBlk"
+        "column": "Quarter_sin"
       },
       "meta": {}
     },
     {
       "expectation_type": "expect_column_values_to_not_be_null",
       "kwargs": {
-        "column": "DistanceGroup"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
-        "column": "DivAirportLandings"
+        "column": "Quarter_cos"
       },
       "meta": {}
     },
@@ -320,20 +173,6 @@
     {
       "expectation_type": "expect_column_values_to_not_be_null",
       "kwargs": {
-        "column": "DayOfWeek_sin"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
-        "column": "DayOfWeek_cos"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_not_be_null",
-      "kwargs": {
         "column": "DayofMonth_sin"
       },
       "meta": {}
@@ -348,14 +187,14 @@
     {
       "expectation_type": "expect_column_values_to_not_be_null",
       "kwargs": {
-        "column": "Quarter_sin"
+        "column": "DayOfWeek_sin"
       },
       "meta": {}
     },
     {
       "expectation_type": "expect_column_values_to_not_be_null",
       "kwargs": {
-        "column": "Quarter_cos"
+        "column": "DayOfWeek_cos"
       },
       "meta": {}
     },
@@ -488,14 +327,6 @@
     {
       "expectation_type": "expect_column_values_to_be_of_type",
       "kwargs": {
-        "column": "FlightDate",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
         "column": "Airline",
         "type_": "int64"
       },
@@ -520,14 +351,6 @@
     {
       "expectation_type": "expect_column_values_to_be_of_type",
       "kwargs": {
-        "column": "Diverted",
-        "type_": "bool"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
         "column": "CRSDepTime",
         "type_": "int64"
       },
@@ -546,14 +369,6 @@
       "kwargs": {
         "column": "Distance",
         "type_": "float64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
-        "column": "Year",
-        "type_": "int64"
       },
       "meta": {}
     },
@@ -608,23 +423,7 @@
     {
       "expectation_type": "expect_column_values_to_be_of_type",
       "kwargs": {
-        "column": "DOT_ID_Marketing_Airline",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
         "column": "IATA_Code_Marketing_Airline",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
-        "column": "Flight_Number_Marketing_Airline",
         "type_": "int64"
       },
       "meta": {}
@@ -640,63 +439,7 @@
     {
       "expectation_type": "expect_column_values_to_be_of_type",
       "kwargs": {
-        "column": "DOT_ID_Operating_Airline",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
         "column": "IATA_Code_Operating_Airline",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
-        "column": "Flight_Number_Operating_Airline",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
-        "column": "OriginAirportID",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
-        "column": "OriginAirportSeqID",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
-        "column": "OriginCityMarketID",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
-        "column": "OriginCityName",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
-        "column": "OriginState",
         "type_": "int64"
       },
       "meta": {}
@@ -712,55 +455,7 @@
     {
       "expectation_type": "expect_column_values_to_be_of_type",
       "kwargs": {
-        "column": "OriginStateName",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
         "column": "OriginWac",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
-        "column": "DestAirportID",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
-        "column": "DestAirportSeqID",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
-        "column": "DestCityMarketID",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
-        "column": "DestCityName",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
-        "column": "DestState",
         "type_": "int64"
       },
       "meta": {}
@@ -776,23 +471,7 @@
     {
       "expectation_type": "expect_column_values_to_be_of_type",
       "kwargs": {
-        "column": "DestStateName",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
         "column": "DestWac",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
-        "column": "DepTimeBlk",
         "type_": "int64"
       },
       "meta": {}
@@ -808,24 +487,16 @@
     {
       "expectation_type": "expect_column_values_to_be_of_type",
       "kwargs": {
-        "column": "ArrTimeBlk",
-        "type_": "int64"
+        "column": "Quarter_sin",
+        "type_": "float64"
       },
       "meta": {}
     },
     {
       "expectation_type": "expect_column_values_to_be_of_type",
       "kwargs": {
-        "column": "DistanceGroup",
-        "type_": "int64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
-        "column": "DivAirportLandings",
-        "type_": "int64"
+        "column": "Quarter_cos",
+        "type_": "float64"
       },
       "meta": {}
     },
@@ -841,22 +512,6 @@
       "expectation_type": "expect_column_values_to_be_of_type",
       "kwargs": {
         "column": "Month_cos",
-        "type_": "float64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
-        "column": "DayOfWeek_sin",
-        "type_": "float64"
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_of_type",
-      "kwargs": {
-        "column": "DayOfWeek_cos",
         "type_": "float64"
       },
       "meta": {}
@@ -880,7 +535,7 @@
     {
       "expectation_type": "expect_column_values_to_be_of_type",
       "kwargs": {
-        "column": "Quarter_sin",
+        "column": "DayOfWeek_sin",
         "type_": "float64"
       },
       "meta": {}
@@ -888,7 +543,7 @@
     {
       "expectation_type": "expect_column_values_to_be_of_type",
       "kwargs": {
-        "column": "Quarter_cos",
+        "column": "DayOfWeek_cos",
         "type_": "float64"
       },
       "meta": {}
@@ -1040,6 +695,24 @@
     {
       "expectation_type": "expect_column_values_to_be_between",
       "kwargs": {
+        "column": "Quarter_sin",
+        "max_value": 1,
+        "min_value": -1
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "Quarter_cos",
+        "max_value": 1,
+        "min_value": -1
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_between",
+      "kwargs": {
         "column": "Month_sin",
         "max_value": 1,
         "min_value": -1
@@ -1050,24 +723,6 @@
       "expectation_type": "expect_column_values_to_be_between",
       "kwargs": {
         "column": "Month_cos",
-        "max_value": 1,
-        "min_value": -1
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_between",
-      "kwargs": {
-        "column": "DayOfWeek_sin",
-        "max_value": 1,
-        "min_value": -1
-      },
-      "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_be_between",
-      "kwargs": {
-        "column": "DayOfWeek_cos",
         "max_value": 1,
         "min_value": -1
       },
@@ -1094,7 +749,7 @@
     {
       "expectation_type": "expect_column_values_to_be_between",
       "kwargs": {
-        "column": "Quarter_sin",
+        "column": "DayOfWeek_sin",
         "max_value": 1,
         "min_value": -1
       },
@@ -1103,7 +758,7 @@
     {
       "expectation_type": "expect_column_values_to_be_between",
       "kwargs": {
-        "column": "Quarter_cos",
+        "column": "DayOfWeek_cos",
         "max_value": 1,
         "min_value": -1
       },

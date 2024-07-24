@@ -4,6 +4,10 @@
 [![Code testing](https://github.com/IVproger/MLops-project/actions/workflows/test-code.yaml/badge.svg)](https://github.com/IVproger/MLops-project/actions/workflows/test-code.yaml)
 [![Model validation](https://github.com/IVproger/MLops-project/actions/workflows/validate-model.yaml/badge.svg)](https://github.com/IVproger/MLops-project/actions/workflows/validate-model.yaml)
 
+Presentation: https://drive.google.com/drive/folders/1NntH7FiwwmKuPwTDOSu5uE7WJ73fX7xn
+
+DockerHub ML image: https://hub.docker.com/r/artemsbulgakov/mlops-model
+
 ## Predicting on-time, delayed and cancelled flights
 
 > Business problem revolves around improving operational efficiency and passenger satisfaction through accurate flight

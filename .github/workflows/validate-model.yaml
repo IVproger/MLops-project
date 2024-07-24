@@ -1,4 +1,4 @@
-name: Code testing
+name: Model testing
 
 on:
   push:
@@ -50,7 +50,7 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root --with dev
       #----------------------------------------------
-      #           Run tests using pytest
+      #   Run Giskard validation for champion model
       #----------------------------------------------
-      - name: Test with pytest
-        run: poetry run pytest tests
+      - name: Validate champion model
+        run: mlflow run . --env-manager=local -e validate

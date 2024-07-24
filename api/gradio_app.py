@@ -28,8 +28,8 @@ EXAMPLES = [  # This is the list of examples that will be shown in the UI
 
 # You need to define a parameter for each column in your raw dataset
 def predict(
-    CRSArrTime,
     CRSDepTime,
+    CRSArrTime,
     CRSElapsedTime,
     Quarter,
     Month,
@@ -50,8 +50,8 @@ def predict(
     Operated_or_Branded_Code_Share_Partners,
 ):
     features = {
-        "CRSArrTime": CRSArrTime,
         "CRSDepTime": CRSDepTime,
+        "CRSArrTime": CRSArrTime,
         "CRSElapsedTime": CRSElapsedTime,
         "Quarter": Quarter,
         "Month": Month,

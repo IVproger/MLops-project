@@ -132,19 +132,20 @@ def preprocess_data(
     df = df.dropna(axis=1)
 
     # Split the dataset into X and y
-    required: list[str] = cfg.required
+    required: list[str] = copy.deepcopy(cfg.required)
     if require_target or "Cancelled" in df.columns:
         X = df.drop(["Cancelled"], axis=1)
         y = df[["Cancelled"]]
     else:
         X = df
         y = None
-        required.remove("Cancelled")
+        if "Cancelled" in required:
+            required.remove("Cancelled")
 
     # Feature extractor
     feature_extractor = (
         "feature_extractor",
-        dtf.feature_extractor(cfg.required),
+        dtf.feature_extractor(required),
     )
 
     # Transformers for cyclic data

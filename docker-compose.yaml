@@ -217,7 +217,7 @@ services:
 
   # Model serving
   ml:
-    image: ArtemSBulgakov/mlops-model
+    image: artemsbulgakov/mlops-model
     build:
       context: .
       dockerfile: api/ml.Dockerfile

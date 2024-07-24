@@ -54,5 +54,8 @@ jobs:
       #----------------------------------------------
       #   Run Giskard validation for champion model
       #----------------------------------------------
+      - name: Download sample data
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry run python3 -m src.download_sample
       - name: Validate champion model
         run: poetry run mlflow run . --env-manager=local -e validate

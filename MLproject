@@ -17,14 +17,14 @@ entry_points:
     parameters:
       example_version:
         type: string
-        default: "v5"
+        default: "v7.0"
       hostname:
         type: string
         default: "localhost"
       port:
         type: float
-        default: 5151
+        default: 8083
       random_state:
         type: float
-        default: 1
-    command: "python src/predict.py ++example_version={example_version} ++hostname={hostname} ++port={port} ++random_state={random_state}"
+        default: 88
+    command: "python3 -m src.predict ++example_version={example_version} ++hostname={hostname} ++port={port} ++random_state={random_state}"

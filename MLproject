@@ -11,3 +11,20 @@ entry_points:
     command: "python3 ./pipelines/data_prepare.py"
   extract:
     command: "./airflow.sh dags test data_extraction_v1_dag"
+  deploy:
+    command: "bash ./scripts/deploy_docker.sh"
+  predict:
+    parameters:
+      example_version:
+        type: string
+        default: "v5"
+      hostname:
+        type: string
+        default: "localhost"
+      port:
+        type: float
+        default: 5151
+      random_state:
+        type: float
+        default: 1
+    command: "python src/predict.py ++example_version={example_version} ++hostname={hostname} ++port={port} ++random_state={random_state}"

@@ -217,9 +217,11 @@ services:
 
   # Model serving
   ml:
+    image: mlops-model
     build:
       context: .
       dockerfile: api/ml.Dockerfile
+    pull_policy: build
     restart: always
     ports:
       - "8082:8080"
@@ -247,9 +249,9 @@ services:
       - ./:/project
     user: "${AIRFLOW_UID:-50000}:0"
     environment:
-      INVOCATIONS_URL: http://ml:8082/invocations
+      PREDICT_URL: http://ml-api:5001/predict
     profiles: [ api ]
-    depends_on: [ ml ]
+    depends_on: [ ml-api ]
 
 volumes:
   postgres-db-volume:

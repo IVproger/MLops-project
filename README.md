@@ -22,6 +22,15 @@ Team members:
 - Artem Bulgakov
 - Alexey Tkachenko
 
+## Deploy best model
+
+1. Install Docker (or Docker Desktop) with Docker Compose plugin.
+2. Run Flask API and Gradio UI:
+   ```bash
+   docker compose up --build ml-gradio ml-api
+   ```
+3. Check Gradio UI at http://localhost:8084 and Flask API at http://localhost:8083.
+
 ## Setup
 
 We use Docker to setup Airflow and run ZenML server. For local development and running MLFlow, we use Poetry venv.

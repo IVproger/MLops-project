@@ -7,7 +7,7 @@ import giskard.testing
 import mlflow
 import pandas as pd
 from omegaconf import DictConfig
-from src.model import scan_models_dir
+from src.model import scan_models_dir, balance_dataset
 from src.data import extract_data, preprocess_data
 from src.utils import init_hydra
 
@@ -43,7 +43,9 @@ def validate_model(
             cfg, raw_df, require_target=False
         )[0],
         classification_labels=list(cfg.model.labels),
-        feature_names=cfg.required,  # Validate only the required features
+        feature_names=list(
+            set(cfg.required) - {"Cancelled"}
+        ),  # Validate only the required features
         name=model_name,
         classification_threshold=0.5,
     )
@@ -76,14 +78,13 @@ def wrap_dataset(cfg: DictConfig) -> tuple[pd.DataFrame, giskard.Dataset, str]:
     """
     # Load data into data frame
     df, version = extract_data(version=cfg.test_data_version, cfg=cfg)
+    df = balance_dataset(df)
 
     # Wrap data into Giskard Dataset object
-    print(cfg.data.cat_cols)
     giskard_dataset = giskard.Dataset(
         df=df,
         target=cfg.data.target_cols[0],
         name=cfg.data.dataset_name,
-        # cat_columns=cfg.data.cat_cols,
     )
 
     return df, giskard_dataset, version

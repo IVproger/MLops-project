@@ -1,17 +1,17 @@
+import giskard  # noqa
 from pathlib import Path
 from mlflow.tracking import MlflowClient
 from mlflow.pyfunc import PyFuncModel
-import giskard  # noqa
 import os
 import seaborn as sn
 import numpy as np
-import pandas as pd  # noqa: E402
-import mlflow  # noqa: E402
-import mlflow.sklearn  # noqa: E402
-import importlib  # noqa: E402
-from omegaconf import DictConfig  # noqa: E402
-from sklearn.model_selection import GridSearchCV  # noqa: E402
-from pandas import DataFrame  # noqa: E402
+import pandas as pd
+import mlflow
+import mlflow.sklearn
+import importlib
+from omegaconf import DictConfig
+from sklearn.model_selection import GridSearchCV
+from pandas import DataFrame
 from zenml.client import Client
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc, confusion_matrix, f1_score
@@ -30,15 +30,20 @@ def fetch_features(name: str, version: str, is_test: bool = False):
     X, y = lst[0].load()
 
     if not is_test:
-        X, y = balance_dataset(X, y)
+        # Correctly concatenate X and y along columns
+        df = pd.concat([X, y], axis=1)
+
+        # Balance the dataset
+        df_balanced = balance_dataset(df)
+
+        # Separate features and target
+        X = df_balanced.drop("Cancelled", axis=1)
+        y = df_balanced["Cancelled"]
 
     return X, y
 
 
-def balance_dataset(X: DataFrame, y: DataFrame):
-    # Correctly concatenate X and y along columns
-    df = pd.concat([X, y], axis=1)
-
+def balance_dataset(df: DataFrame):
     # Separate instances based on 'Cancelled' status
     cancelled = df[df["Cancelled"]]
     on_time = df[~df["Cancelled"]]
@@ -52,10 +57,7 @@ def balance_dataset(X: DataFrame, y: DataFrame):
     # Concatenate the balanced datasets
     df_balanced = pd.concat([cancelled, on_time_sampled])
 
-    # Separate features and target
-    X = df_balanced.drop("Cancelled", axis=1)
-    y = df_balanced["Cancelled"]
-    return X, y
+    return df_balanced
 
 
 def fetch_features_old(name: str, version: str, cfg: DictConfig):

@@ -2,16 +2,9 @@ import os
 import mlflow.pyfunc
 from flask import Flask, request, make_response
 
-model = mlflow.pyfunc.load_model("model_dir")
+model = mlflow.pyfunc.load_model("./model")
 
 app = Flask(__name__)
-
-
-@app.route("/info", methods=["GET"])
-def info():
-    response = make_response(str(model.metadata), 200)
-    response.content_type = "text/plain"
-    return response
 
 
 @app.route("/", methods=["GET"])
@@ -29,15 +22,49 @@ def home():
     return response
 
 
-# /predict endpoint
+@app.route("/info", methods=["GET"])
+def info():
+    response = make_response(str(model.metadata), 200)
+    response.content_type = "text/plain"
+    return response
+
+
 @app.route("/predict", methods=["POST"])
 def predict():
-    data = request.json
-    print(data)
+    data: dict = request.json
+    print("Request:", data)
+
+    data.update(
+        {
+            "FlightDate": 0,
+            "Diverted": False,
+            "Year": 0,
+            "DOT_ID_Marketing_Airline": 0,
+            "Flight_Number_Marketing_Airline": 0,
+            "DOT_ID_Operating_Airline": 0,
+            "Flight_Number_Operating_Airline": 0,
+            "OriginAirportID": 0,
+            "OriginAirportSeqID": 0,
+            "OriginCityMarketID": 0,
+            "OriginCityName": 0,
+            "OriginState": 0,
+            "OriginStateName": 0,
+            "DestAirportID": 0,
+            "DestAirportSeqID": 0,
+            "DestCityMarketID": 0,
+            "DestCityName": 0,
+            "DestState": 0,
+            "DestStateName": 0,
+            "DepTimeBlk": 0,
+            "ArrTimeBlk": 0,
+            "DistanceGroup": 0,
+            "DivAirportLandings": 0,
+        }
+    )
 
     # Get the prediction
     prediction = model.predict(data)
-    print(prediction)
+    print("Prediction:", prediction)
 
     # Prepare the response
     content = {"prediction": prediction}

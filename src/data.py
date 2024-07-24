@@ -36,7 +36,6 @@ def sample_data(cfg: DictConfig):
             gdown.download(cfg.data.url, datastore_path, quiet=False, use_cookies=False)
 
         # Determine the total number of rows in the file without loading it entirely
-
         total_rows = sum(1 for row in open(datastore_path, "r")) - 1  # Exclude header
 
         # Calculate the sample size
@@ -46,12 +45,12 @@ def sample_data(cfg: DictConfig):
         start_row = (
             0
             if cfg.data.last_included_row_number < 0
-            else cfg.data.last_included_row_number + 1
+            else (cfg.data.last_included_row_number + 1) % total_rows
         )
 
-        # If the start_row + sample_size exceeds total_rows, start from the beginning
+        # If the start_row + sample_size exceeds total_rows, adjust the sample size
         if start_row + sample_size > total_rows:
-            start_row = 0  # Reset to start from the beginning
+            sample_size = total_rows - start_row
 
         # Load only the necessary rows into memory
         skiprows = range(
@@ -73,7 +72,7 @@ def sample_data(cfg: DictConfig):
         )
 
         # Increment and update the data version in the copy
-        new_version = f"v{updated_cfg.data.version_number+1}.0"
+        new_version = f"v{updated_cfg.data.version_number + 1}.0"
         updated_cfg.data.data_version = new_version
         updated_cfg.data.version_number = updated_cfg.data.version_number + 1
 

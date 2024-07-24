@@ -29,7 +29,7 @@ Team members:
    ```bash
    docker compose up --build ml-gradio ml-api ml
    ```
-3. Check Gradio UI at http://localhost:8084, Flask API at http://localhost:8083, model API at http://localhost:8082.
+3. Check Gradio UI at http://localhost:8084, Flask API at http://localhost:8083, model API at http://localhost:8082/ping.
 
 ## Setup
 

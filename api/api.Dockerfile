@@ -9,7 +9,7 @@ RUN pip install --no-cache mlflow==2.14.2
 
 # Copy model to image and install dependencies
 WORKDIR /opt/ml
-COPY models/xgboost-challenger61/basic_xgboost /opt/ml/model
+COPY models/xgboost-challenger88/basic_xgboost /opt/ml/model
 RUN python3 -c "from mlflow.models import container as C; C._install_pyfunc_deps('/opt/ml/model', install_mlflow=False, enable_mlserver=False, env_manager='local');"
 
 # Configure MLFlow settings

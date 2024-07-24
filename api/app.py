@@ -34,34 +34,6 @@ def predict():
     data: dict = request.json
     print("Request:", data, flush=True)
 
-    data.update(
-        {
-            "FlightDate": 0,
-            "Diverted": False,
-            "Year": 0,
-            "DOT_ID_Marketing_Airline": 0,
-            "Flight_Number_Marketing_Airline": 0,
-            "DOT_ID_Operating_Airline": 0,
-            "Flight_Number_Operating_Airline": 0,
-            "OriginAirportID": 0,
-            "OriginAirportSeqID": 0,
-            "OriginCityMarketID": 0,
-            "OriginCityName": 0,
-            "OriginState": 0,
-            "OriginStateName": 0,
-            "DestAirportID": 0,
-            "DestAirportSeqID": 0,
-            "DestCityMarketID": 0,
-            "DestCityName": 0,
-            "DestState": 0,
-            "DestStateName": 0,
-            "DepTimeBlk": 0,
-            "ArrTimeBlk": 0,
-            "DistanceGroup": 0,
-            "DivAirportLandings": 0,
-        }
-    )
-
     # Get the prediction
     prediction = model.predict(data)
     print("Prediction:", prediction, flush=True)

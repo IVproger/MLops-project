@@ -12,7 +12,7 @@ class feature_extractor(BaseEstimator, TransformerMixin):
     def transform(self, X):
         columns_to_drop = set(X) - set(self.features)
 
-        X_transformed = X[list[columns_to_drop]]
+        X_transformed = X.drop(columns_to_drop, axis=1)
 
         return X_transformed
 

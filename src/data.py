@@ -159,18 +159,25 @@ def preprocess_data(
         (f"hhmm_{feature}", dtf.hhmm_transformer(feature)) for feature in cfg.hhmm
     ]
 
-    # Transformers for hashing
-    hash_transformers = [
-        (f"hash_{feature}", dtf.hash_transformer(feature))
-        for feature in df.columns[df.dtypes == "object"]
-    ]
-
     # Assembling the pipeline
     pipeline = Pipeline(
         [
             feature_extractor,
             *cyclic_transformers,
             *hhmm_transformers,
+        ]
+    )
+
+    X = pipeline.transform(X)
+
+    # Transformers for hashing
+    hash_transformers = [
+        (f"hash_{feature}", dtf.hash_transformer(feature))
+        for feature in X.columns[X.dtypes == "object"]
+    ]
+
+    pipeline = Pipeline(
+        [
             *hash_transformers,
         ]
     )

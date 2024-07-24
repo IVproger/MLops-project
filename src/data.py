@@ -122,7 +122,7 @@ def read_datastore() -> tuple[pd.DataFrame, str]:
 
 
 def preprocess_data(
-    cfg: DictConfig, df: pd.DataFrame
+    cfg: DictConfig, df: pd.DataFrame, require_target: bool = True
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Preprocess the data and return features and target
@@ -132,8 +132,14 @@ def preprocess_data(
     df = df.dropna(axis=1)
 
     # Split the dataset into X and y
-    X = df.drop(["Cancelled"], axis=1)
-    y = df[["Cancelled"]]
+    required: list[str] = cfg.required
+    if require_target or "Cancelled" in df.columns:
+        X = df.drop(["Cancelled"], axis=1)
+        y = df[["Cancelled"]]
+    else:
+        X = df
+        y = None
+        required.remove("Cancelled")
 
     # Feature extractor
     feature_extractor = (

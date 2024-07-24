@@ -12,16 +12,16 @@ PREDICT_URL = os.environ.get("PREDICT_URL", "http://localhost:8083/predict")
 
 # fmt: off
 EXAMPLES = [  # This is the list of examples that will be shown in the UI
-    [1155, 1025, 90.0, 1, 2, 14, 1, "OAK", 6, 91, "SAN", 6, 91, 446.0, "Southwest Airlines Co.", "WN", "WN", "WN", "WN", "WN"],
-    [905, 620, 105.0, 2, 4, 6, 3, "PHX", 4, 81, "DEN", 8, 82, 602.0, "Southwest Airlines Co.", "WN", "WN", "WN", "WN", "WN"],
-    [1401, 1245, 136.0, 2, 4, 17, 7, "BWI", 24, 35, "ORD", 17, 41, 621.0, "SkyWest Airlines Inc.", "OO", "AA", "OO", "AA", "AA_CODESHARE"],
-    [929, 743, 106.0, 2, 4, 1, 5, "CMH", 39, 44, "LGA", 36, 22, 479.0, "Republic Airlines", "YX", "DL", "YX", "DL", "DL_CODESHARE"],
-    [1547, 1423, 204.0, 2, 4, 6, 3, "RFD", 17, 41, "AZA", 4, 81, 1373.0, "Allegiant Air", "G4", "G4", "G4", "G4", "G4"],
-    [1445, 1355, 170.0, 2, 4, 3, 7, "IND", 18, 42, "DEN", 8, 82, 977.0, "Southwest Airlines Co.", "WN", "WN", "WN", "WN", "WN"],
-    [2125, 2040, 45.0, 2, 4, 17, 7, "JMS", 38, 66, "DVL", 38, 66, 83.0, "SkyWest Airlines Inc.", "OO", "UA", "OO", "UA", "UA_CODESHARE"],
-    [2230, 2145, 165.0, 2, 4, 4, 1, "HOU", 48, 74, "PHX", 4, 81, 1020.0, "Southwest Airlines Co.", "WN", "WN", "WN", "WN", "WN"],
-    [1530, 1329, 121.0, 2, 4, 3, 7, "LGA", 36, 22, "CLT", 37, 36, 544.0, "American Airlines Inc.", "AA", "AA", "AA", "AA", "AA"],
-    [1842, 1550, 172.0, 2, 4, 18, 1, "DCA", 51, 38, "MIA", 12, 33, 919.0, "American Airlines Inc.", "AA", "AA", "AA", "AA", "AA"],
+    [1025, 1155, 90.0, 1, 2, 14, 1, "OAK", 6, 91, "SAN", 6, 91, 446.0, "Southwest Airlines Co.", "WN", "WN", "WN", "WN", "WN"],
+    [620, 905, 105.0, 2, 4, 6, 3, "PHX", 4, 81, "DEN", 8, 82, 602.0, "Southwest Airlines Co.", "WN", "WN", "WN", "WN", "WN"],
+    [1245, 1401, 136.0, 2, 4, 17, 7, "BWI", 24, 35, "ORD", 17, 41, 621.0, "SkyWest Airlines Inc.", "OO", "AA", "OO", "AA", "AA_CODESHARE"],
+    [743, 929, 106.0, 2, 4, 1, 5, "CMH", 39, 44, "LGA", 36, 22, 479.0, "Republic Airlines", "YX", "DL", "YX", "DL", "DL_CODESHARE"],
+    [1423, 1547, 204.0, 2, 4, 6, 3, "RFD", 17, 41, "AZA", 4, 81, 1373.0, "Allegiant Air", "G4", "G4", "G4", "G4", "G4"],
+    [1355, 1445, 170.0, 2, 4, 3, 7, "IND", 18, 42, "DEN", 8, 82, 977.0, "Southwest Airlines Co.", "WN", "WN", "WN", "WN", "WN"],
+    [2040, 2125, 45.0, 2, 4, 17, 7, "JMS", 38, 66, "DVL", 38, 66, 83.0, "SkyWest Airlines Inc.", "OO", "UA", "OO", "UA", "UA_CODESHARE"],
+    [2145, 2230, 165.0, 2, 4, 4, 1, "HOU", 48, 74, "PHX", 4, 81, 1020.0, "Southwest Airlines Co.", "WN", "WN", "WN", "WN", "WN"],
+    [1329, 1530, 121.0, 2, 4, 3, 7, "LGA", 36, 22, "CLT", 37, 36, 544.0, "American Airlines Inc.", "AA", "AA", "AA", "AA", "AA"],
+    [1550, 1842, 172.0, 2, 4, 18, 1, "DCA", 51, 38, "MIA", 12, 33, 919.0, "American Airlines Inc.", "AA", "AA", "AA", "AA", "AA"],
 ]
 # fmt: on
 

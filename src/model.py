@@ -389,26 +389,6 @@ def retrieve_model_with_alias(model_name, model_alias) -> mlflow.pyfunc.PyFuncMo
     return model
 
 
-def save_model_to_folder(model_name: str, model_alias: str, folder_path: str) -> None:
-    model_save_path = os.path.join(folder_path, model_name, model_alias)
-
-    # Ensure the destination folder exists
-    os.makedirs(model_save_path, exist_ok=True)
-
-    # Fetch artifacts
-    client = MlflowClient()
-
-    try:
-        model: PyFuncModel = mlflow.pyfunc.load_model(
-            model_uri=f"models:/{model_name}@{model_alias}"
-        )
-
-        artifact = client.list_artifacts(model.metadata.run_id)[0]
-        client.download_artifacts(model.metadata.run_id, artifact.path, model_save_path)
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-
 def retrieve_model_with_version(
     model_name, model_version="v1"
 ) -> mlflow.pyfunc.PyFuncModel:
@@ -454,6 +434,21 @@ def choose_champion(model_name: str):
     return champion, champion_version
 
 
+def save_model_to_folder(model_name: str, model_alias: str, folder_path: str) -> None:
+    dst_path = Path(folder_path) / f"{model_name}-{model_alias}"
+    dst_path.mkdir(parents=True, exist_ok=True)
+
+    # Fetch artifacts
+    client = MlflowClient()
+
+    try:
+        model: PyFuncModel = retrieve_model_with_alias(model_name, model_alias)
+        artifact = client.list_artifacts(model.metadata.run_id)[0]
+        client.download_artifacts(model.metadata.run_id, artifact.path, str(dst_path))
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
 def save_every_challenger(cfg: DictConfig):
     client = mlflow.tracking.MlflowClient()
     for registered_model in client.search_registered_models():
@@ -467,13 +462,8 @@ def save_every_challenger(cfg: DictConfig):
             ):
                 continue  # Skip wrong aliases
 
-            model = retrieve_model_with_alias(registered_model.name, model_alias)
-            dst_path = (
-                Path(cfg.model.models_dir) / f"{registered_model.name}-{model_alias}"
-            )
-            dst_path.mkdir(parents=True, exist_ok=True)
-            client.download_artifacts(
-                model.metadata.run_id, cfg.model.artifact_path, str(dst_path)
+            save_model_to_folder(
+                registered_model.name, model_alias, cfg.model.models_dir
             )
 
 

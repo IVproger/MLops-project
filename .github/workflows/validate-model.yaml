@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  pre-commit:
+  validate:
     runs-on: ubuntu-latest
     steps:
       #----------------------------------------------
@@ -53,4 +53,4 @@ jobs:
       #   Run Giskard validation for champion model
       #----------------------------------------------
       - name: Validate champion model
-        run: mlflow run . --env-manager=local -e validate
+        run: poetry run mlflow run . --env-manager=local -e validate

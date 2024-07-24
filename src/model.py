@@ -30,26 +30,31 @@ def fetch_features(name: str, version: str, is_test: bool = False):
     X, y = lst[0].load()
 
     if not is_test:
-        # Correctly concatenate X and y along columns
-        df = pd.concat([X, y], axis=1)
+        X, y = balance_dataset(X, y)
 
-        # Separate instances based on 'Cancelled' status
-        cancelled = df[df["Cancelled"]]
-        on_time = df[~df["Cancelled"]]
+    return X, y
 
-        # Calculate the fraction to sample from the on_time instances to balance the classes
-        representative_percent = (cancelled.shape[0] * 100 / on_time.shape[0]) / 100
 
-        # Sample from the on_time instances
-        on_time_sampled = on_time.sample(frac=representative_percent)
+def balance_dataset(X: DataFrame, y: DataFrame):
+    # Correctly concatenate X and y along columns
+    df = pd.concat([X, y], axis=1)
 
-        # Concatenate the balanced datasets
-        df_balanced = pd.concat([cancelled, on_time_sampled])
+    # Separate instances based on 'Cancelled' status
+    cancelled = df[df["Cancelled"]]
+    on_time = df[~df["Cancelled"]]
 
-        # Separate features and target
-        X = df_balanced.drop("Cancelled", axis=1)
-        y = df_balanced["Cancelled"]
+    # Calculate the fraction to sample from the on_time instances to balance the classes
+    representative_percent = (cancelled.shape[0] * 100 / on_time.shape[0]) / 100
 
+    # Sample from the on_time instances
+    on_time_sampled = on_time.sample(frac=representative_percent)
+
+    # Concatenate the balanced datasets
+    df_balanced = pd.concat([cancelled, on_time_sampled])
+
+    # Separate features and target
+    X = df_balanced.drop("Cancelled", axis=1)
+    y = df_balanced["Cancelled"]
     return X, y
 
 

@@ -1,5 +1,6 @@
 from pathlib import Path
-
+from mlflow.tracking import MlflowClient
+from mlflow.pyfunc import PyFuncModel
 import giskard  # noqa
 import os
 import seaborn as sn
@@ -17,7 +18,7 @@ from sklearn.metrics import roc_curve, auc, confusion_matrix, f1_score
 
 from src.data import extract_data, preprocess_data
 
-mlflow.set_tracking_uri(uri="http://127.0.0.1:5000")
+mlflow.set_tracking_uri(uri="http://0.0.0.0:5000")
 
 
 def fetch_features(name: str, version: str, is_test: bool = False):
@@ -111,13 +112,14 @@ def train(
         n_jobs=cfg.cv_n_jobs,
         refit=evaluation_metric,
         cv=cv,
-        verbose=1,
+        verbose=10,
         return_train_score=True,
     )
 
     # Fit GridSearch
     print("Starting GridSearch fit...")
     gs.fit(X_train, y_train.values.ravel())
+    print("Fit completed!")
 
     return gs
 
@@ -385,6 +387,26 @@ def retrieve_model_with_alias(model_name, model_alias) -> mlflow.pyfunc.PyFuncMo
     )
 
     return model
+
+
+def save_model_to_folder(model_name: str, model_alias: str, folder_path: str) -> None:
+    model_save_path = os.path.join(folder_path, model_name, model_alias)
+
+    # Ensure the destination folder exists
+    os.makedirs(model_save_path, exist_ok=True)
+
+    # Fetch artifacts
+    client = MlflowClient()
+
+    try:
+        model: PyFuncModel = mlflow.pyfunc.load_model(
+            model_uri=f"models:/{model_name}@{model_alias}"
+        )
+
+        artifact = client.list_artifacts(model.metadata.run_id)[0]
+        client.download_artifacts(model.metadata.run_id, artifact.path, model_save_path)
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 
 def retrieve_model_with_version(

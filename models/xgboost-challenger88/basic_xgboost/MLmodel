@@ -1,0 +1,62 @@
+artifact_path: basic_xgboost
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict_proba
+    python_version: 3.11.9
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.5.1
+mlflow_version: 2.14.2
+model_size_bytes: 11563569
+model_uuid: 69555d9849884235bafc9bfc8d870544
+run_id: f4de6c4b438c4a088a2b873e55e134b9
+saved_input_example_info:
+  artifact_path: input_example.json
+  format: tf-serving
+  type: ndarray
+signature:
+  inputs: '[{"type": "long", "name": "Airline", "required": true}, {"type": "long",
+    "name": "Origin", "required": true}, {"type": "long", "name": "Dest", "required":
+    true}, {"type": "long", "name": "CRSDepTime", "required": true}, {"type": "double",
+    "name": "CRSElapsedTime", "required": true}, {"type": "double", "name": "Distance",
+    "required": true}, {"type": "long", "name": "Quarter", "required": true}, {"type":
+    "long", "name": "Month", "required": true}, {"type": "long", "name": "DayofMonth",
+    "required": true}, {"type": "long", "name": "DayOfWeek", "required": true}, {"type":
+    "long", "name": "Marketing_Airline_Network", "required": true}, {"type": "long",
+    "name": "Operated_or_Branded_Code_Share_Partners", "required": true}, {"type":
+    "long", "name": "IATA_Code_Marketing_Airline", "required": true}, {"type": "long",
+    "name": "Operating_Airline", "required": true}, {"type": "long", "name": "IATA_Code_Operating_Airline",
+    "required": true}, {"type": "long", "name": "OriginStateFips", "required": true},
+    {"type": "long", "name": "OriginWac", "required": true}, {"type": "long", "name":
+    "DestStateFips", "required": true}, {"type": "long", "name": "DestWac", "required":
+    true}, {"type": "long", "name": "CRSArrTime", "required": true}, {"type": "double",
+    "name": "Quarter_sin", "required": true}, {"type": "double", "name": "Quarter_cos",
+    "required": true}, {"type": "double", "name": "Month_sin", "required": true},
+    {"type": "double", "name": "Month_cos", "required": true}, {"type": "double",
+    "name": "DayofMonth_sin", "required": true}, {"type": "double", "name": "DayofMonth_cos",
+    "required": true}, {"type": "double", "name": "DayOfWeek_sin", "required": true},
+    {"type": "double", "name": "DayOfWeek_cos", "required": true}, {"type": "long",
+    "name": "CRSArrTime_HH", "required": true}, {"type": "long", "name": "CRSArrTime_MM",
+    "required": true}, {"type": "double", "name": "CRSArrTime_HH_sin", "required":
+    true}, {"type": "double", "name": "CRSArrTime_HH_cos", "required": true}, {"type":
+    "double", "name": "CRSArrTime_MM_sin", "required": true}, {"type": "double", "name":
+    "CRSArrTime_MM_cos", "required": true}, {"type": "long", "name": "CRSDepTime_HH",
+    "required": true}, {"type": "long", "name": "CRSDepTime_MM", "required": true},
+    {"type": "double", "name": "CRSDepTime_HH_sin", "required": true}, {"type": "double",
+    "name": "CRSDepTime_HH_cos", "required": true}, {"type": "double", "name": "CRSDepTime_MM_sin",
+    "required": true}, {"type": "double", "name": "CRSDepTime_MM_cos", "required":
+    true}, {"type": "double", "name": "CRSElapsedTime_HH", "required": true}, {"type":
+    "double", "name": "CRSElapsedTime_MM", "required": true}, {"type": "double", "name":
+    "CRSElapsedTime_HH_sin", "required": true}, {"type": "double", "name": "CRSElapsedTime_HH_cos",
+    "required": true}, {"type": "double", "name": "CRSElapsedTime_MM_sin", "required":
+    true}, {"type": "double", "name": "CRSElapsedTime_MM_cos", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
+  params: null
+utc_time_created: '2024-07-24 16:56:34.094242'

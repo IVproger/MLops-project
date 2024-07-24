@@ -32,7 +32,7 @@ def info():
 @app.route("/predict", methods=["POST"])
 def predict():
     data: dict = request.json
-    print("Request:", data)
+    print("Request:", data, flush=True)
 
     data.update(
         {
@@ -64,10 +64,10 @@ def predict():
 
     # Get the prediction
     prediction = model.predict(data)
-    print("Prediction:", prediction)
+    print("Prediction:", prediction, flush=True)
 
     # Prepare the response
-    content = {"prediction": prediction}
+    content = {"On-Time": float(prediction[0][0]), "Cancelled": float(prediction[0][1])}
     response = make_response(content, 200)
     response.headers["content-type"] = "application/json"
     return response

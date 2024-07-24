@@ -1,3 +1,4 @@
+import json
 import os
 
 import gradio as gr
@@ -8,6 +9,21 @@ import pandas as pd
 
 cfg = init_hydra("main")
 PREDICT_URL = os.environ.get("PREDICT_URL", "http://localhost:8083/predict")
+
+# fmt: off
+EXAMPLES = [  # This is the list of examples that will be shown in the UI
+    [1155, 1025, 90.0, 1, 2, 14, 1, "OAK", 6, 91, "SAN", 6, 91, 446.0, "Southwest Airlines Co.", "WN", "WN", "WN", "WN", "WN"],
+    [905, 620, 105.0, 2, 4, 6, 3, "PHX", 4, 81, "DEN", 8, 82, 602.0, "Southwest Airlines Co.", "WN", "WN", "WN", "WN", "WN"],
+    [1401, 1245, 136.0, 2, 4, 17, 7, "BWI", 24, 35, "ORD", 17, 41, 621.0, "SkyWest Airlines Inc.", "OO", "AA", "OO", "AA", "AA_CODESHARE"],
+    [929, 743, 106.0, 2, 4, 1, 5, "CMH", 39, 44, "LGA", 36, 22, 479.0, "Republic Airlines", "YX", "DL", "YX", "DL", "DL_CODESHARE"],
+    [1547, 1423, 204.0, 2, 4, 6, 3, "RFD", 17, 41, "AZA", 4, 81, 1373.0, "Allegiant Air", "G4", "G4", "G4", "G4", "G4"],
+    [1445, 1355, 170.0, 2, 4, 3, 7, "IND", 18, 42, "DEN", 8, 82, 977.0, "Southwest Airlines Co.", "WN", "WN", "WN", "WN", "WN"],
+    [2125, 2040, 45.0, 2, 4, 17, 7, "JMS", 38, 66, "DVL", 38, 66, 83.0, "SkyWest Airlines Inc.", "OO", "UA", "OO", "UA", "UA_CODESHARE"],
+    [2230, 2145, 165.0, 2, 4, 4, 1, "HOU", 48, 74, "PHX", 4, 81, 1020.0, "Southwest Airlines Co.", "WN", "WN", "WN", "WN", "WN"],
+    [1530, 1329, 121.0, 2, 4, 3, 7, "LGA", 36, 22, "CLT", 37, 36, 544.0, "American Airlines Inc.", "AA", "AA", "AA", "AA", "AA"],
+    [1842, 1550, 172.0, 2, 4, 18, 1, "DCA", 51, 38, "MIA", 12, 33, 919.0, "American Airlines Inc.", "AA", "AA", "AA", "AA", "AA"],
+]
+# fmt: on
 
 
 # You need to define a parameter for each column in your raw dataset
@@ -55,7 +71,6 @@ def predict(
         "Marketing_Airline_Network": Marketing_Airline_Network,
         "Operated_or_Branded_Code_Share_Partners": Operated_or_Branded_Code_Share_Partners,
     }
-    print(features)
 
     # Build a dataframe of one row
     raw_df = pd.DataFrame([features])
@@ -68,7 +83,16 @@ def predict(
     )
 
     # Convert it into JSON
-    payload = X.iloc[0, :].to_json()
+    payload = X.iloc[0, :].to_dict()
+    for key, value in payload.items():
+        if not (
+            key.endswith("cos")
+            or key.endswith("sin")
+            or key.startswith("CRSElapsedTime")
+            or key == "Distance"
+        ):
+            payload[key] = int(value)
+    payload = json.dumps(payload)
     print(payload)
 
     # Send POST request with the payload to the deployed Model API
@@ -91,33 +115,52 @@ demo = gr.Interface(
     fn=predict,
     inputs=[
         gr.Number(
-            label="CRSArrTime",
-            info="Scheduled arrival time in HHMM, e.g. '1430' for 14:30.",
-            value=1130,
+            label="CRSDepTime",
+            info="Scheduled departure time in HHMM, e.g. '1130' for 11:30.",
+            precision=0,
+            minimum=0,
+            maximum=2400,
         ),
         gr.Number(
-            label="CRSDepTime",
-            info="Scheduled departure time in HHMM.",
+            label="CRSArrTime",
+            info="Scheduled arrival time in HHMM, e.g. '1430' for 14:30.",
+            precision=0,
+            minimum=0,
+            maximum=2400,
         ),
         gr.Number(
             label="CRSElapsedTime",
             info="Scheduled elapsed time of the flight in minutes.",
+            precision=0,
+            minimum=1,
         ),
         gr.Number(
             label="Quarter",
             info="Quarter of the year as an integer.",
+            precision=0,
+            minimum=1,
+            maximum=4,
         ),
         gr.Number(
             label="Month",
             info="Month of the flight as an integer.",
+            precision=0,
+            minimum=1,
+            maximum=12,
         ),
         gr.Number(
             label="DayofMonth",
             info="Day of the month as an integer.",
+            precision=0,
+            minimum=1,
+            maximum=31,
         ),
         gr.Number(
             label="DayOfWeek",
             info="Day of the week as an integer (1=Monday, 7=Sunday).",
+            precision=0,
+            minimum=1,
+            maximum=7,
         ),
         gr.Text(
             label="Origin",
@@ -127,10 +170,14 @@ demo = gr.Interface(
         gr.Number(
             label="OriginStateFips",
             info="FIPS code of the origin state.",
+            precision=0,
+            minimum=0,
         ),
         gr.Number(
             label="OriginWac",
             info="World Area Code for the origin.",
+            precision=0,
+            minimum=0,
         ),
         gr.Text(
             label="Dest",
@@ -140,14 +187,20 @@ demo = gr.Interface(
         gr.Number(
             label="DestStateFips",
             info="FIPS code of the destination state.",
+            precision=0,
+            minimum=0,
         ),
         gr.Number(
             label="DestWac",
             info="World Area Code for the destination.",
+            precision=0,
+            minimum=0,
         ),
         gr.Number(
             label="Distance",
             info="Distance of the flight in miles.",
+            precision=0,
+            minimum=0,
         ),
         gr.Text(
             label="Airline",
@@ -181,7 +234,10 @@ demo = gr.Interface(
             max_lines=1,
         ),
     ],
-    outputs=gr.Text(label="Prediction Result"),
+    outputs=gr.Label(label="Prediction Result"),
+    examples=EXAMPLES,
+    examples_per_page=50,
+    live=True,  # Run model prediction immediately after changing the input
 )
 
 

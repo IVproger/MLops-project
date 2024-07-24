@@ -2,6 +2,7 @@
 
 [![Code linting](https://github.com/IVproger/MLops-project/actions/workflows/pre-commit.yaml/badge.svg)](https://github.com/IVproger/MLops-project/actions/workflows/pre-commit.yaml)
 [![Code testing](https://github.com/IVproger/MLops-project/actions/workflows/test-code.yaml/badge.svg)](https://github.com/IVproger/MLops-project/actions/workflows/test-code.yaml)
+[![Model validation](https://github.com/IVproger/MLops-project/actions/workflows/validate-model.yaml/badge.svg)](https://github.com/IVproger/MLops-project/actions/workflows/validate-model.yaml)
 
 ## Predicting on-time, delayed and cancelled flights
 

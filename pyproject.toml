@@ -10,7 +10,6 @@ package-mode = false
 python = ">=3.11,<3.12"
 hydra-core = "^1.3.2"
 dvc = "^3.51.2"
-pytest = "^8.2.2"
 gdown = "^5.2.0"
 psycopg2-binary = "^2.9.9"
 pandas = "^2.2.2"
@@ -30,15 +29,27 @@ flask = "3.0.3"
 gradio = "3.50.2"
 imblearn = "^0.0"
 
+# Dev group
 [tool.poetry.group.dev]
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.5.0"
 pre-commit = "^3.7.1"
 
 [tool.ruff]
-ignore = [
-    "E402",
-]
+ignore = ["E402"]
+
+# Test group
+[tool.poetry.group.test]
+[tool.poetry.group.test.dependencies]
+pytest = "^8.2.2"
+coverage = "^7.6.0"
+pytest-xdist = "^3.6.1"
+
+[tool.pytest.ini_options]
+addopts = "--disable-warnings"
+
+[tool.coverage.report]
+exclude_also = ["def __repr__"]
 
 [build-system]
 requires = ["poetry-core"]

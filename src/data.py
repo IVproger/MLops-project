@@ -85,30 +85,22 @@ def sample_data(cfg: DictConfig):
 
 def validate_initial_data(cfg: DictConfig, df: pd.DataFrame):
     """
-    Validate the data using Great Expectations.
+    Validate initial data using Great Expectations.
     """
-    try:
-        context = gx.get_context(
-            project_root_dir=cfg.data.context_dir_path, mode="file"
-        )
-        ds: PandasDatasource = context.sources.add_or_update_pandas(name="sample_data")
-        ds.add_dataframe_asset(
-            name="sample_file",
-            dataframe=df,
-        )
-        checkpoint = context.get_checkpoint("sample_checkpoint")
+    context = gx.get_context(project_root_dir=cfg.data.context_dir_path, mode="file")
+    ds: PandasDatasource = context.sources.add_or_update_pandas(name="sample_data")
+    ds.add_dataframe_asset(
+        name="sample_file",
+        dataframe=df,
+    )
+    checkpoint = context.get_checkpoint("sample_checkpoint")
 
-        checkpoint_result = checkpoint.run()
+    checkpoint_result = checkpoint.run()
 
-        if checkpoint_result.success:
-            print("Validation successful.")
-            return True
-        else:
-            print("Validation failed.")
-            print(checkpoint_result)
-    except Exception as e:
-        print("Error in validating the data: ", e)
-    return False
+    if checkpoint_result.success:
+        print("Validation successful.")
+    else:
+        raise ValueError("Validation failed: ", checkpoint_result)
 
 
 def read_datastore() -> tuple[pd.DataFrame, str]:
@@ -189,7 +181,7 @@ def validate_features(
     X: pd.DataFrame, y: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Validate the data using Great Expectations.
+    Validate the data post-transformation using Great Expectations.
     """
     cfg = init_hydra("main")
     context = gx.get_context(project_root_dir=cfg.data.context_dir_path, mode="file")

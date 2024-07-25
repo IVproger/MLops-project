@@ -8,10 +8,7 @@ def test_validate_features():
     X = df.drop(["Cancelled"], axis=1)
     y = df["Cancelled"]
 
-    try:
-        validated_X, validated_y = validate_features(X, y)
-    except Exception:
-        pytest.fail("Validation failed")
+    assert validate_features(X, y)
 
 
 def test_validate_features_fail():
@@ -19,5 +16,5 @@ def test_validate_features_fail():
     y = pd.DataFrame({"target": [0, 1, 0]})
 
     with pytest.raises(Exception) as excInfo:
-        validated_X, validated_y = validate_features(X, y)
+        validate_features(X, y)
     assert "Validation failed" in str(excInfo.value)

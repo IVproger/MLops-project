@@ -8,10 +8,7 @@ def test_validate_initial_data():
     cfg = init_hydra("main")
     df = pd.read_csv("tests/samples/test.csv")
 
-    try:
-        validate_initial_data(cfg, df)
-    except ValueError:
-        pytest.fail("Validation failed")
+    validate_initial_data(cfg, df)
 
 
 def test_validate_initial_data_fail():

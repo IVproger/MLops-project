@@ -1,15 +1,17 @@
 import pandas as pd
-import pytest
+
 from src.data import preprocess_data
+from src.utils import init_hydra
 
 
-def test_preprocess_data_with_incorrect_structure():
-    # Create a DataFrame that does not match the expected structure
-    # For example, missing required columns or having incorrect data types
-    incorrect_df = pd.DataFrame(
-        {"SomeColumn": [1, 2, 3], "AnotherColumn": ["a", "b", "c"]}
-    )
+def test_preprocess_data():
+    cfg = init_hydra("main")
 
-    # Expecting the function to raise an error due to incorrect structure
-    with pytest.raises(Exception):
-        preprocess_data(incorrect_df)
+    df = pd.read_csv("tests/samples/test.csv")
+    df_transformed = pd.read_csv("tests/samples/test_transformed.csv")
+
+    fresh_df = pd.concat([*preprocess_data(cfg, df)], axis=1).round(6)
+
+    assert (
+        df_transformed.compare(fresh_df).size == 0
+    ), "Expected correct transformations"

@@ -1,8 +1,9 @@
 # Notebooks outline
 ```
 notebooks
-├── business_data_understanding.ipynb  # Showcases the Business Data Understanding of the project.
+├── business_data_understanding.ipynb  # Showcases the Business Data Understanding of the project.`
 ├── data_analysis.ipynb                # EDA for the dataset
+├── eda_presentation.ipynb             # EDA for the final presentation
 ├── expectations.ipynb                 # Great Expectations
 ├── data_quality.ipynb                 # Defines data requirements for the project and showcases data checks
 ├── poc.ipynb                          # Proof-of-concept model showcase that solves the business problem.

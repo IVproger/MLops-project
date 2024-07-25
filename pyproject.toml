@@ -47,6 +47,7 @@ pytest-xdist = "^3.6.1"
 
 [tool.pytest.ini_options]
 addopts = "--disable-warnings"
+pythonpath = ["src"]
 
 [tool.coverage.report]
 exclude_also = ["def __repr__"]
